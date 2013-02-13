@@ -4,6 +4,7 @@
 #include "Kinect440.h"
 #include "ofMain.h"
 #include "Midi.h"
+#include "Audio440.h"
 
 class testApp : public ofBaseApp {
 	public:
@@ -20,12 +21,12 @@ class testApp : public ofBaseApp {
 		void mousePressed(int x, int y, int button);
 		void mouseReleased(int x, int y, int button);
 		void windowResized(int w, int h);
-		
+		void audioIn(float *, int, int);
 		ofxKinectNui kinref;
 
 
 		//Core Classes
-
+		Audio440 audio;
 		Kinect440 kinect;
 		Midi midi;
 
@@ -33,6 +34,8 @@ class testApp : public ofBaseApp {
 		bool midiDebug;
 		bool skeletonDebug;
 		bool videoColorDebug;
+		bool audioDebug;
+		bool frameRateDebug;
 
 
 };

@@ -1,7 +1,8 @@
 #pragma once
-
+#include "Kinect440.h"
 #include "ofMain.h"
 #include "ofxMidi.h"
+
 
 class Midi {
 
@@ -9,7 +10,9 @@ public:
 	Midi(){};
 	~Midi();
 
-	void init();
+	Kinect440* kinect; 
+
+	void init(Kinect440&);
 
 	//Setters
 	void setControllerValue(int controller, float value);
@@ -24,10 +27,11 @@ public:
 
 	//Debug
 	void drawDebugScreen(bool);
+	void debugUpdate();
 
 private:
 
-	
+	bool bDebugMode;
 
 	ofxMidiOut midiOut;
 	int channel;

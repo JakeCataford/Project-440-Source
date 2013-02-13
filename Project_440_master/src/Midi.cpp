@@ -1,6 +1,10 @@
 #include "Midi.h"
 
-void Midi::init() {
+void Midi::init(Kinect440 &KinectReference) {
+
+	bDebugMode = false;
+
+	kinect = &KinectReference;
 
 	//TODO Parse and read config settings
 
@@ -33,7 +37,18 @@ Midi::~Midi() {
 
 void Midi::setControllerValue(int controller,float value) {
 
+	controllers[controller] = value;
 	midiOut.sendControlChange(channel, controller, value);
+
+}
+
+void Midi::debugUpdate() {
+	if(!bDebugMode) {
+		bDebugMode = true;
+	}
+
+	setControllerValue(1,kinect->getSkeletonJoint(kinect->FIRST_ACTIVE, NUI_SKELETON_POSITION_HEAD).x);
+
 
 }
 
@@ -41,8 +56,12 @@ void Midi::drawDebugScreen(bool scannerTest) {
 
 	for(int i = 0; i < 8; i++) {
 		for(int j = 0; j < 8; j++) {
-
-			ofColor c = ofColor::fromHsb(180,ofMap(controllers[j + (i*8)],0,127,0,255,true),255);
+			ofColor c;
+			if(!bDebugMode) {
+				c = ofColor::fromHsb(180,ofMap(controllers[j + (i*8)],0,127,0,255,true),255);
+			}else{
+				c = ofColor::fromHsb(55,ofMap(controllers[j + (i*8)],0,127,0,255,true),255);
+			}
 			ofSetColor(c);
 			ofFill();
 			ofRect(50*j,50*i  + ofGetWindowHeight() - 400,0,50,50);

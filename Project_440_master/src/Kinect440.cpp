@@ -18,7 +18,7 @@ void  Kinect440::init(ofxKinectNui& kinref) {
 	initSetting.videoResolution = NUI_IMAGE_RESOLUTION_640x480;
 	initSetting.depthResolution = NUI_IMAGE_RESOLUTION_320x240;
 	kinect->init(initSetting);
-	kinect->open();
+	kinect->open(true);
 
 	kinect->addKinectListener(this, &Kinect440::kinectPlugged, &Kinect440::kinectUnplugged);
 	kinectSource = &kinref;
@@ -54,18 +54,19 @@ void   Kinect440::update() {
 	}
 
 
-	
-	if(kinect->skeletonPoints[0][0].z > 0){
-		for(int j = 0; j < kinect->SKELETON_POSITION_COUNT; j++) {
+	for(int i = 0; i < ofxKinectNui::SKELETON_COUNT; i++) {
+		if(kinect->skeletonPoints[i][0].z > 0){
+			for(int j = 0; j < kinect->SKELETON_POSITION_COUNT; j++) {
 			
-			//update the lerp model
-			skeletonLerpModel[0][j].x += (ofMap(kinect->skeletonPoints[0][j].x,0,320,0,ofGetWindowWidth()) - skeletonLerpModel[0][j].x)*0.2;
-			skeletonLerpModel[0][j].y += (ofMap(kinect->skeletonPoints[0][j].y,0,320,0,ofGetWindowWidth()) - skeletonLerpModel[0][j].y)*0.2;
-			// ATM z is only used to check skeleton validity
+				//update the lerp model
+				skeletonLerpModel[i][j].x += (ofMap(kinect->skeletonPoints[i][j].x,0,320,0,ofGetWindowWidth()) - skeletonLerpModel[i][j].x)*0.2;
+				skeletonLerpModel[i][j].y += (ofMap(kinect->skeletonPoints[i][j].y,0,320,0,ofGetWindowWidth()) - skeletonLerpModel[i][j].y)*0.2;
+				// ATM z is only used to check skeleton validity
 
 
 			
 
+			}
 		}
 	}
 }
@@ -83,22 +84,20 @@ void Kinect440::drawSkeletonDebugScreen() {
 	ofDisableAlphaBlending();
 	kinect->drawSkeleton(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
 	ofPushStyle();
-	if(kinect->skeletonPoints[0][0].z > 0){
-		for(int j = 0; j < kinect->SKELETON_POSITION_COUNT; j++) {
+	for(int j = 0; j < kinect->SKELETON_POSITION_COUNT; j++) {
 				s	<< j << "     "
-					<< kinect->skeletonPoints[0][j].x << "     "
-					<< kinect->skeletonPoints[0][j].y << "     "
-					<< kinect->skeletonPoints[0][j].z << "     \n";
+					<< kinect->skeletonPoints[updateActivePlayer()][j].x << "     "
+					<< kinect->skeletonPoints[updateActivePlayer()][j].y << "     "
+					<< kinect->skeletonPoints[updateActivePlayer()][j].z << "     \n";
 			
 				ofSetColor(255,0,0);
-				ofCircle(getRawJoint(0,j),10);
+				ofCircle(getRawJoint(FIRST_ACTIVE,j),10);
 				ofSetColor(0,255,130);
-				ofCircle(getMappedJoint(0,j),10);
+				ofCircle(getMappedJoint(FIRST_ACTIVE,j),10);
 				ofSetColor(1,0,130);
-				ofCircle(getSkeletonJoint(0,j),10);
+				ofCircle(getSkeletonJoint(FIRST_ACTIVE,j),10);
 			
 
-		}
 	}
 	ofSetColor(0,0,0);
 	ofDrawBitmapString(s.str(),10,10);
@@ -225,7 +224,7 @@ void   Kinect440::startRecording(){
 		// stop playback if running
 		stopPlayback();
 
-		//kinectRecorder.setup(kinect, "recording.dat");
+		kinectRecorder.setup(*kinect, "recording.dat");
 		bRecord = true;
 	}
 }
@@ -249,7 +248,7 @@ void   Kinect440::stopPlayback(){
 	if(bPlayback){
 		kinectPlayer.close();
 		kinect->open();
-		//kinectSource = &kinect;
+		kinectSource = kinect;
 		bPlayback = false;
 	}
 }
@@ -262,6 +261,10 @@ void   Kinect440::stopRecording(){
 }
 
 ofPoint Kinect440::getSkeletonJoint(int player,int joint){
+
+	if(player == FIRST_ACTIVE){
+		player = updateActivePlayer();
+	}
 
 	//Sanity Check
 	if(player > ofxKinectNui::SKELETON_COUNT || joint > ofxKinectNui::SKELETON_POSITION_COUNT || player < 0 || joint < 0 ) {
@@ -277,6 +280,10 @@ ofPoint Kinect440::getSkeletonJoint(int player,int joint){
 }
 
 ofPoint Kinect440::getMappedJoint(int player,int joint){
+
+	if(player == FIRST_ACTIVE){
+		player = updateActivePlayer();
+	}
 
 	//Sanity Check
 	if(player > ofxKinectNui::SKELETON_COUNT || joint > ofxKinectNui::SKELETON_POSITION_COUNT || player < 0 || joint < 0 ) {
@@ -298,6 +305,11 @@ ofPoint Kinect440::getMappedJoint(int player,int joint){
 
 ofPoint Kinect440::getRawJoint(int player,int joint){
 
+
+	if(player == FIRST_ACTIVE){
+		player = updateActivePlayer();
+	}
+
 	//Sanity Check
 	if(player > ofxKinectNui::SKELETON_COUNT || joint > ofxKinectNui::SKELETON_POSITION_COUNT || player < 0 || joint < 0 ) {
 	
@@ -314,5 +326,24 @@ ofPoint Kinect440::getRawJoint(int player,int joint){
 		p.y = kinect->skeletonPoints[player][joint].y;
 		return p;
 	}
+
+}
+
+
+int Kinect440::updateActivePlayer() {
+	
+	for(int i = 0; i < ofxKinectNui::SKELETON_COUNT; i++) {
+
+		if(kinect->skeletonPoints[i][0].z > 0){
+			
+
+			printf("got player %i",i);
+			return i;
+
+		}
+
+	}
+
+	return 0;
 
 }

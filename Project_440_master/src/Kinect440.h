@@ -17,6 +17,8 @@ class Kinect440 {
 
 public:
 
+	static const int FIRST_ACTIVE = 10;
+
 	Kinect440(){};
 	~Kinect440(){};
 	void init(ofxKinectNui&);
@@ -39,6 +41,10 @@ public:
 	ofPoint getMappedJoint(int,int); //Raw, Scaled Joint
 	ofPoint getRawJoint(int,int); //Raw unscaled joint
 
+	
+
+	int updateActivePlayer();
+
 	ofxKinectNui* kinect;
 
 	ofxKinectNuiPlayer kinectPlayer;
@@ -60,6 +66,7 @@ public:
 	unsigned short nearClipping;
 	unsigned short farClipping;
 	int angle;
+
 		
 	int mRotationX, mRotationY;
 
