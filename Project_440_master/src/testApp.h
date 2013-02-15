@@ -22,9 +22,8 @@ class testApp : public ofBaseApp {
 		void mouseReleased(int x, int y, int button);
 		void windowResized(int w, int h);
 		void audioIn(float *, int, int);
+		//references
 		ofxKinectNui kinref;
-
-
 		//Core Classes
 		Audio440 audio;
 		Kinect440 kinect;

@@ -59,8 +59,8 @@ void   Kinect440::update() {
 			for(int j = 0; j < kinect->SKELETON_POSITION_COUNT; j++) {
 			
 				//update the lerp model
-				skeletonLerpModel[i][j].x += (ofMap(kinect->skeletonPoints[i][j].x,0,320,0,ofGetWindowWidth()) - skeletonLerpModel[i][j].x)*0.2;
-				skeletonLerpModel[i][j].y += (ofMap(kinect->skeletonPoints[i][j].y,0,320,0,ofGetWindowWidth()) - skeletonLerpModel[i][j].y)*0.2;
+				skeletonLerpModel[i][j].x += (ofMap(kinect->skeletonPoints[i][j].x,0,320,0,ofGetWindowWidth()) - skeletonLerpModel[i][j].x)*0.5;
+				skeletonLerpModel[i][j].y += (ofMap(kinect->skeletonPoints[i][j].y,0,240,0,ofGetWindowHeight()) - skeletonLerpModel[i][j].y)*0.5;
 				// ATM z is only used to check skeleton validity
 
 
@@ -297,7 +297,7 @@ ofPoint Kinect440::getMappedJoint(int player,int joint){
 		ofPoint p;
 
 		p.x = ofMap(kinect->skeletonPoints[player][joint].x,0,320,0,ofGetWindowWidth());
-		p.y = ofMap(kinect->skeletonPoints[player][joint].y,0,320,0,ofGetWindowWidth());
+		p.y = ofMap(kinect->skeletonPoints[player][joint].y,0,240,0,ofGetWindowHeight());
 
 		return p;
 	}
@@ -336,8 +336,6 @@ int Kinect440::updateActivePlayer() {
 
 		if(kinect->skeletonPoints[i][0].z > 0){
 			
-
-			printf("got player %i",i);
 			return i;
 
 		}

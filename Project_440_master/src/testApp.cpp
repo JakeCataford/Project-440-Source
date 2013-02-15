@@ -8,14 +8,15 @@
 //--------------------------------------------------------------
 void testApp::setup() {
 	
-	//Inits
+
+	
 	audio = Audio440();
 	kinect = Kinect440();
 	midi = Midi();
 	midi.init(kinect);
 	audio.init();
-
-	ofSoundStreamSetup(0,2,this,44100,512,4);	
+	ofSoundStreamListDevices();
+	ofSoundStreamSetup(0,2,this,48000,512,4);	
 	ofSetLogLevel(OF_LOG_VERBOSE);
 	
 	ofSetVerticalSync(true);
@@ -29,13 +30,13 @@ void testApp::setup() {
 	audioDebug = false;
 	frameRateDebug = true;
 	kinect.init(kinref);
-	
-	ofSoundStreamStart();
+
 }
 
 //--------------------------------------------------------------
 void testApp::update() {
 	kinect.update();
+	
 	if(midiDebug) {
 		midi.debugUpdate();
 	}
@@ -49,10 +50,12 @@ void testApp::draw() {
 		audio.drawAudioDebug();
 	}
 	if(frameRateDebug) {
+		ofPushStyle();
 		ofSetColor(0,0,0);
 		stringstream s;
 		s << ofGetFrameRate();
 		ofDrawBitmapString(s.str(),ofGetWindowWidth()-100,ofGetWindowHeight()-50);
+		ofPopStyle();
 	
 	}
 	if(videoColorDebug){
@@ -64,6 +67,7 @@ void testApp::draw() {
 	if(midiDebug){
 		midi.drawDebugScreen(ANIMATE_VALUES_DEBUG_440);
 	}
+
 }
 
 //--------------------------------------------------------------
@@ -87,8 +91,7 @@ void testApp::keyPressed (int key) {
 		break;
 	case 'o':
 		if(kinect.bRecord) {
-			//kinect.stopRecording();
-			
+			//kinect.stopRecording();	
 		}else{
 			//kinect.startRecording();
 		}
@@ -131,12 +134,15 @@ void testApp::windowResized(int w, int h){
 
 void testApp::audioIn(float * input, int bufferSize, int nChannels){
 
-	for(int i = 0; i < bufferSize; i++) {
-		audio.left[i*2] = input[i*2];
-		audio.right[i*2+1] = input[i*2+1];
-	}
-	
 
+	// samples are "interleaved"
+	for (int i = 0; i < bufferSize; i++){
+		audio.left[i] = input[i*2];
+		audio.right[i] = input[i*2+1];
+	}
+	audio.bufferCounter++;
+	
+	audio.update();
 }
 
 
