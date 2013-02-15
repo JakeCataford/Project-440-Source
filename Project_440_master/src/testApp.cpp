@@ -31,12 +31,16 @@ void testApp::setup() {
 	frameRateDebug = true;
 	kinect.init(kinref);
 
+	orb = PulseOrb();
+	orb.init(audio,kinect);
+	orb.queueIntro();
+
 }
 
 //--------------------------------------------------------------
 void testApp::update() {
 	kinect.update();
-	
+	orb.update();
 	if(midiDebug) {
 		midi.debugUpdate();
 	}
@@ -45,7 +49,7 @@ void testApp::update() {
 //--------------------------------------------------------------
 void testApp::draw() {
 	ofBackground(255, 255, 255);
-
+	orb.draw();
 	if(audioDebug) {
 		audio.drawAudioDebug();
 	}
@@ -67,6 +71,7 @@ void testApp::draw() {
 	if(midiDebug){
 		midi.drawDebugScreen(ANIMATE_VALUES_DEBUG_440);
 	}
+
 
 }
 

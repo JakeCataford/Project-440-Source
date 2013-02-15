@@ -1,3 +1,5 @@
+#pragma once
+
 #include "ofMain.h"
 #include "fft.h"
 #define BUFFER_SIZE 512
@@ -46,5 +48,7 @@ class Audio440 {
 
 		float softAmplitude;
 		float subs;
+
+
 };
 

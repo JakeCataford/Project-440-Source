@@ -75,7 +75,7 @@ void Audio440::update() {
 	}
 
 	rawAmp /= 255;
-	softAmplitude += (rawAmp - softAmplitude)*0.1;
+	softAmplitude += (rawAmp - softAmplitude)*0.05;
 
 	//LogAvg Calculations
 	for (int i = 0; i < 12; i++)

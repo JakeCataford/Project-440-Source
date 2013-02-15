@@ -5,6 +5,7 @@
 #include "ofMain.h"
 #include "Midi.h"
 #include "Audio440.h"
+#include "PulseOrb.h"
 
 class testApp : public ofBaseApp {
 	public:
@@ -36,5 +37,6 @@ class testApp : public ofBaseApp {
 		bool audioDebug;
 		bool frameRateDebug;
 
-
+		//test
+		PulseOrb orb;
 };
