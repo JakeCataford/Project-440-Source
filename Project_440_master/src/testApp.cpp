@@ -22,7 +22,7 @@ void testApp::setup() {
 	ofSetVerticalSync(true);
 
 	ofSetFrameRate(60);
-
+	ofEnableSmoothing();
 	//Debug
 	midiDebug = false;
 	skeletonDebug = false;
@@ -31,16 +31,16 @@ void testApp::setup() {
 	frameRateDebug = true;
 	kinect.init(kinref);
 
-	orb = PulseOrb();
-	orb.init(audio,kinect);
-	orb.queueIntro();
+	vmanager = VisualiserManager();
+	vmanager.init(audio,kinect);
+	ofEnableAlphaBlending();
 
 }
 
 //--------------------------------------------------------------
 void testApp::update() {
 	kinect.update();
-	orb.update();
+	vmanager.update();
 	if(midiDebug) {
 		midi.debugUpdate();
 	}
@@ -48,8 +48,8 @@ void testApp::update() {
 
 //--------------------------------------------------------------
 void testApp::draw() {
-	ofBackground(255, 255, 255);
-	orb.draw();
+	ofClear(0);
+	vmanager.draw();
 	if(audioDebug) {
 		audio.drawAudioDebug();
 	}
@@ -90,6 +90,9 @@ void testApp::keyPressed (int key) {
 		break;
 	case 'f':
 		frameRateDebug = !frameRateDebug;
+		break;
+	case 'n':
+		vmanager.cycle();
 		break;
 	case 'a':
 		audioDebug = !audioDebug;

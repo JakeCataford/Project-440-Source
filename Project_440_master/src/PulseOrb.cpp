@@ -27,13 +27,13 @@ void PulseOrb::draw() {
 
 
 	if(introMultip < 1 && isIntro) {
-		introMultip += 0.001;
+		introMultip += 0.01;
 	}else if(isIntro){
 		isIntro = false;
 	}
 
 	if(isOutro && introMultip > 0) {
-		introMultip -= 0.001;
+		introMultip -= 0.01;
 	}else if(isOutro) {
 
 		cleanup();
@@ -53,7 +53,7 @@ void PulseOrb::draw() {
 		ofRotate(counter);
 		ofFill();
 		ofSetColor(50,250,10);
-		ofSphere(200-audio->getAvgBin(4)*10);
+		ofSphere(200-audio->getAvgBin(4)*10*(introMultip));
 		ofNoFill();
 		ofSetColor(0,0,0);
 		ofSphere(200-audio->getAvgBin(4)*10);
@@ -75,7 +75,7 @@ void PulseOrb::draw() {
 		ofSphere(100-audio->getAvgBin(6)*10);
 		ofPopStyle();
 		ofPopMatrix();
-
+		ofFill();
 		ofPopMatrix();
 	}
 
@@ -85,8 +85,6 @@ void PulseOrb::draw() {
 
 void PulseOrb::cleanup() {
 
-	kinect = NULL;
-	audio = NULL;
 	isOutro = false;
 	isClean = true;
 

@@ -8,7 +8,7 @@
 class Audio440 {
 
 	public:
-
+		static const int SAMPLE_RATE = 44100;
 		static const int LEFT = 1;
 		static const int RIGHT = 2;
 		static const int MIX = 0;

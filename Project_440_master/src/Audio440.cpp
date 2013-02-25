@@ -28,7 +28,7 @@ void Audio440::drawAudioDebug() {
 		ofSetColor(50,0,140);
 		ofRect((i*8),ofGetWindowHeight(),8,-softMagnitude[i]*10.0f);
 	}
-	for (int i = 0; i < 12; i++){
+	for (int i = 0; i < 24; i++){
 		ofSetColor(0,50,20);
 		ofRect((i*50),0,50,getAvgBin(i)*50.0f);
 	}
@@ -47,7 +47,7 @@ void Audio440::drawAudioDebug() {
 
 float Audio440::getAvgBin(int index) {
 
-	return ofMap(20* log10(logAvgBins[index]),0,50,0,10,true);
+	return ofMap(20* log10(logAvgBins[index]),0,70,0,10,true);
 
 }
 
@@ -70,32 +70,41 @@ void Audio440::update() {
 	/* and discard the upper half of the buffer */
 	for(int j=1; j < 512/2; j++) {
 		freq[index][j] = magnitude[j];
-		softMagnitude[j] += (magnitude[j] - softMagnitude[j])*0.3;
+		softMagnitude[j] += (magnitude[j] - softMagnitude[j])*0.238;
 		rawAmp += magnitude[j];
 	}
 
 	rawAmp /= 255;
 	softAmplitude += (rawAmp - softAmplitude)*0.05;
 
+	int counter = 0;
 	//LogAvg Calculations
-	for (int i = 0; i < 12; i++)
+	for (int i = 0; i < 7; i++)
 	{
 		float avg = 0;
 		int lowFreq;
-		if ( i == 0 ){
-			lowFreq = 0;
-		}else{
-			lowFreq = (int)((48000/2) / (float)pow((double)2, (12 - i)));
-		}
-		int hiFreq = (int)((48000/2) / (float)pow((double)2, (11 - i)));
-		int lowBound = floor((double)(lowFreq*2100)/48000);//2100 is very abitrary, it should be 256 but that wasnt working
-		int hiBound = ceil((double)(hiFreq*2100)/48000);
-		for (int j = lowBound; j <= hiBound; j++)
+		//lol...
+		int lowBound = pow(2,(double)i);
+		int hiBound = pow(2,(double)i+1);
+		
+		int range = floor((double)(hiBound - lowBound)/2); //actually halfrange...
+
+		for (int j = lowBound; j <= lowBound + range; j++)
 		{
 			avg += softMagnitude[j];
 		}
-		avg /= (hiBound - lowBound + 1);
-		logAvgBins[i] = avg;
+		avg /= (range + 1);
+		logAvgBins[counter] = avg;
+
+		avg = 0;
+		counter++;
+		for (int j = hiBound - range; j <= hiBound; j++)
+		{
+			avg += softMagnitude[j];
+		}
+		avg /= (range + 1);
+		logAvgBins[counter] = avg;
+		counter++;
 	}
 
 
@@ -103,6 +112,7 @@ void Audio440::update() {
 	
 	
 }
+
 
 float Audio440::getAmp() {
 	return ofMap(20* log10(softAmplitude),0,20,0,10,true);

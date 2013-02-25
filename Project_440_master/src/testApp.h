@@ -5,11 +5,10 @@
 #include "ofMain.h"
 #include "Midi.h"
 #include "Audio440.h"
-#include "PulseOrb.h"
+#include "VisualiserManager.h"
 
 class testApp : public ofBaseApp {
 	public:
-
 		void setup();
 		void update();
 		void draw();
@@ -37,6 +36,5 @@ class testApp : public ofBaseApp {
 		bool audioDebug;
 		bool frameRateDebug;
 
-		//test
-		PulseOrb orb;
+		VisualiserManager vmanager;
 };

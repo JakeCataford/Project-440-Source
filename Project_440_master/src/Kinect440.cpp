@@ -81,9 +81,7 @@ void Kinect440::drawSkeletonDebugScreen() {
 	<< "red is the raw values, maroon is the Lerped vals, green is the mapped vals, displaying Raw vals numerically\n";
 	
 	//kinect->drawVideo(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
-	ofEnableAlphaBlending();
 	kinect->drawLabel(0, 0, ofGetWindowWidth(), ofGetWindowHeight()); //Lets Draw the players
-	ofDisableAlphaBlending();
 	kinect->drawSkeleton(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
 	ofPushStyle();
 	for(int j = 0; j < kinect->SKELETON_POSITION_COUNT; j++) {
@@ -129,7 +127,7 @@ void   Kinect440::drawDefaultDebugScreen() {
 		kinect->drawDepth(0, 0, 1024, 768);
 		// draw players' label images on video images
 		kinect->drawLabel(0, 0, 1024, 768);
-		ofDisableAlphaBlending();
+		
 	// Draw skeleton only
 	}else if(bDrawSkeleton){
 		kinect->drawSkeleton(0, 0, 1024, 768);	// draw skeleton images on video images
@@ -143,7 +141,7 @@ void   Kinect440::drawDefaultDebugScreen() {
 			kinect->drawDepth(450, 20, 400, 300);
 			// draw players' label images on video images
 			kinect->drawLabel(450, 20, 400, 300);
-			ofDisableAlphaBlending();
+		
 			// draw skeleton images on video images
 			kinect->drawSkeleton(20, 20, 400, 300);
 
@@ -153,7 +151,7 @@ void   Kinect440::drawDefaultDebugScreen() {
 			kinectPlayer.drawDepth(20, 340, 400, 300);
 			kinectPlayer.drawLabel(20, 340, 400, 300);
 
-			ofDisableAlphaBlending();
+		
 			kinectPlayer.drawSkeleton(20, 20, 400, 300);
 		}
 	}
