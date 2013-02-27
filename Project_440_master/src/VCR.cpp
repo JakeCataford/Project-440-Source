@@ -1,8 +1,9 @@
 #include "VCR.h"
 
-void VCR::init(Audio440& aud,Kinect440& kin){
+void VCR::init(Audio440& aud,Kinect440& kin, ColorTheme& the){
 	kinect = &kin;
 	audio = &aud;
+	theme = &the;
 	scan = Scanlines();
 	age = 0;
 	fbo.allocate(ofGetWidth(),ofGetHeight());
@@ -32,7 +33,7 @@ void VCR::draw(){
 				ofRotateY(sin((double)age/200)*5);
 				//ofClear(0);
 				ofBackground(0,0,0, intro*255);
-				ofSetColor(47,72,178,(50 + audio->getAvgBin(10)*10)*intro);
+				ofSetColor(theme->color2.r,theme->color2.g,theme->color2.b,(50 + audio->getAvgBin(10)*10)*intro);
 				ofRect(-500,-500,500,ofGetWidth()*2,ofGetHeight()*2);
 
 
@@ -66,7 +67,7 @@ void VCR::draw(){
 
 				ofPushMatrix();
 					ofPushStyle();
-						ofSetColor(74,38,16);
+						ofSetColor(theme->color1.r,theme->color1.g,theme->color1.b);
 	
 							ofTranslate(ofGetWidth()/2,ofGetHeight()/2);
 							ofRotateZ(sin((age-20)/50)*90  +45);
@@ -81,7 +82,7 @@ void VCR::draw(){
 
 				ofPushMatrix();
 					ofPushStyle();
-						ofSetColor(126,31,24);
+						ofSetColor(theme->color1.r,theme->color1.g,theme->color1.b);
 							ofTranslate(ofGetWidth()/2,ofGetHeight()/2);
 							ofRotateZ(sin((age-10)/50)*90  +45);
 							ofRotateY(sin((age - 5)/10)*30);
@@ -95,7 +96,7 @@ void VCR::draw(){
 
 				ofPushMatrix();
 					ofPushStyle();
-						ofSetColor(139,131,81);
+						ofSetColor(theme->color3.r,theme->color3.g,theme->color3.b);
 	
 							ofTranslate(ofGetWidth()/2,ofGetHeight()/2);
 							ofRotateZ(sin(age/50)*90 +45);
@@ -155,8 +156,6 @@ void VCR::draw(){
 		abr.begin();
 		
 			abrFbo.begin();
-				bulge.setUniform1f("width", ofGetWidth()/2);
-				bulge.setUniform1f("height", ofGetHeight()/2);
 				abr.setUniform1f("amount", audio->getAvgBin(5)*50);
 				abr.setUniform1f("intensity", ofMap(audio->getAmp(),0,8,0.1,0.3));
 				fbo.draw(0,0,ofGetWidth(),ofGetHeight());
@@ -181,13 +180,13 @@ void VCR::draw(){
 
 
 	if(isOutro) {
-		intro-= 0.01f;
+		intro-= 0.1f;
 		if(intro <= 0.1) {
 			isCleanup = true;
 		}
 	}else{
 		if(intro < 1.0) {
-			intro += 0.01;
+			intro += 0.1;
 		}else{
 			intro = 1.0;
 		}

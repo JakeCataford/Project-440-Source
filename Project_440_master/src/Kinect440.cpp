@@ -5,7 +5,9 @@ using namespace std;
 
 void  Kinect440::init(ofxKinectNui& kinref) {
 
-	kinect = &kinref;
+	if(!NO_KINECT_DEBUG) {
+		kinect = &kinref;
+	
 
 	ofxKinectNui::InitSetting initSetting;
 	initSetting.grabVideo = true;
@@ -44,30 +46,32 @@ void  Kinect440::init(ofxKinectNui& kinref) {
 	kinect->setLabelDrawer(labelDraw_);
 	kinect->setSkeletonDrawer(skeletonDraw_);
 
-
+	}
 }
 
 void   Kinect440::update() {
-	kinectSource->update();
-	if(bRecord){
-		kinectRecorder.update();
-	}
+	if(!NO_KINECT_DEBUG) {
+		kinectSource->update();
+		if(bRecord){
+			kinectRecorder.update();
+		}
 
 
-	for(int i = 0; i < ofxKinectNui::SKELETON_COUNT; i++) {
-		if(kinect->skeletonPoints[i][0].z > 0){
-			for(int j = 0; j < kinect->SKELETON_POSITION_COUNT; j++) {
+		for(int i = 0; i < ofxKinectNui::SKELETON_COUNT; i++) {
+			if(kinect->skeletonPoints[i][0].z > 0){
+				for(int j = 0; j < kinect->SKELETON_POSITION_COUNT; j++) {
 			
-				if(kinect->skeletonPoints[i][j].x > 0 && kinect->skeletonPoints[i][j].y) {
-					//update the lerp model
-					skeletonLerpModel[i][j].x += (ofMap(kinect->skeletonPoints[i][j].x,0,320,0,ofGetWindowWidth()) - skeletonLerpModel[i][j].x)*0.5;
-					skeletonLerpModel[i][j].y += (ofMap(kinect->skeletonPoints[i][j].y,0,240,0,ofGetWindowHeight()) - skeletonLerpModel[i][j].y)*0.5;
-					// ATM z is only used to check skeleton validity
+					if(kinect->skeletonPoints[i][j].x > 0 && kinect->skeletonPoints[i][j].y) {
+						//update the lerp model
+						skeletonLerpModel[i][j].x += (ofMap(kinect->skeletonPoints[i][j].x,0,320,0,ofGetWindowWidth()) - skeletonLerpModel[i][j].x)*0.5;
+						skeletonLerpModel[i][j].y += (ofMap(kinect->skeletonPoints[i][j].y,0,240,0,ofGetWindowHeight()) - skeletonLerpModel[i][j].y)*0.5;
+						// ATM z is only used to check skeleton validity
+					}
+
+
+			
+
 				}
-
-
-			
-
 			}
 		}
 	}
@@ -75,33 +79,35 @@ void   Kinect440::update() {
 
 
 void Kinect440::drawSkeletonDebugScreen() {
-
-	stringstream s;
-	s << "Kinect Skeleton Debugger:\n"
-	<< "red is the raw values, maroon is the Lerped vals, green is the mapped vals, displaying Raw vals numerically\n";
+	if(!NO_KINECT_DEBUG) {
+		stringstream s;
+		s << "Kinect Skeleton Debugger:\n"
+		<< "red is the raw values, maroon is the Lerped vals, green is the mapped vals, displaying Raw vals numerically\n";
 	
-	//kinect->drawVideo(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
-	kinect->drawLabel(0, 0, ofGetWindowWidth(), ofGetWindowHeight()); //Lets Draw the players
-	kinect->drawSkeleton(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
-	ofPushStyle();
-	for(int j = 0; j < kinect->SKELETON_POSITION_COUNT; j++) {
-				s	<< j << "     "
-					<< kinect->skeletonPoints[updateActivePlayer()][j].x << "     "
-					<< kinect->skeletonPoints[updateActivePlayer()][j].y << "     "
-					<< kinect->skeletonPoints[updateActivePlayer()][j].z << "     \n";
+		//kinect->drawVideo(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
+		kinect->drawLabel(0, 0, ofGetWindowWidth(), ofGetWindowHeight()); //Lets Draw the players
+		kinect->drawSkeleton(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
+		ofPushStyle();
+		for(int j = 0; j < kinect->SKELETON_POSITION_COUNT; j++) {
+					s	<< j << "     "
+						<< kinect->skeletonPoints[updateActivePlayer()][j].x << "     "
+						<< kinect->skeletonPoints[updateActivePlayer()][j].y << "     "
+						<< kinect->skeletonPoints[updateActivePlayer()][j].z << "     \n";
 			
-				ofSetColor(255,0,0);
-				ofCircle(getRawJoint(FIRST_ACTIVE,j),10);
-				ofSetColor(0,255,130);
-				ofCircle(getMappedJoint(FIRST_ACTIVE,j),10);
-				ofSetColor(1,0,130);
-				ofCircle(getSkeletonJoint(FIRST_ACTIVE,j),10);
+					ofSetColor(255,0,0);
+					ofCircle(getRawJoint(FIRST_ACTIVE,j),10);
+					ofSetColor(0,255,130);
+					ofCircle(getMappedJoint(FIRST_ACTIVE,j),10);
+					ofSetColor(1,0,130);
+					ofCircle(getSkeletonJoint(FIRST_ACTIVE,j),10);
 			
+
+		}
+		ofSetColor(0,0,0);
+		ofDrawBitmapString(s.str(),10,10);
+		ofPopStyle();
 
 	}
-	ofSetColor(0,0,0);
-	ofDrawBitmapString(s.str(),10,10);
-	ofPopStyle();
 
 
 	
@@ -114,100 +120,103 @@ void Kinect440::drawSkeletonDebugScreen() {
 
 void   Kinect440::drawDefaultDebugScreen() {
 	
-	
-	// Draw video only
-	if(bDrawVideo){
-		// draw video images from kinect camera
-		kinect->drawVideo(0, 0, 1024, 768);
-	// Draw depth + users label only
-	}else if(bDrawDepthLabel){
-		ofEnableAlphaBlending();
-
-		// draw depth images from kinect depth sensor
-		kinect->drawDepth(0, 0, 1024, 768);
-		// draw players' label images on video images
-		kinect->drawLabel(0, 0, 1024, 768);
-		
-	// Draw skeleton only
-	}else if(bDrawSkeleton){
-		kinect->drawSkeleton(0, 0, 1024, 768);	// draw skeleton images on video images
-	// Draw calibrated image only
-	}else{
-		if(!bPlayback){
+	if(!NO_KINECT_DEBUG) {
+		// Draw video only
+		if(bDrawVideo){
 			// draw video images from kinect camera
-			kinect->drawVideo(20, 20, 400, 300);
+			kinect->drawVideo(0, 0, 1024, 768);
+		// Draw depth + users label only
+		}else if(bDrawDepthLabel){
 			ofEnableAlphaBlending();
+
 			// draw depth images from kinect depth sensor
-			kinect->drawDepth(450, 20, 400, 300);
+			kinect->drawDepth(0, 0, 1024, 768);
 			// draw players' label images on video images
-			kinect->drawLabel(450, 20, 400, 300);
+			kinect->drawLabel(0, 0, 1024, 768);
 		
-			// draw skeleton images on video images
-			kinect->drawSkeleton(20, 20, 400, 300);
-
+		// Draw skeleton only
+		}else if(bDrawSkeleton){
+			kinect->drawSkeleton(0, 0, 1024, 768);	// draw skeleton images on video images
+		// Draw calibrated image only
 		}else{
-			kinectPlayer.draw(20, 20, 400, 300);
-			ofEnableAlphaBlending();
-			kinectPlayer.drawDepth(20, 340, 400, 300);
-			kinectPlayer.drawLabel(20, 340, 400, 300);
+			if(!bPlayback){
+				// draw video images from kinect camera
+				kinect->drawVideo(20, 20, 400, 300);
+				ofEnableAlphaBlending();
+				// draw depth images from kinect depth sensor
+				kinect->drawDepth(450, 20, 400, 300);
+				// draw players' label images on video images
+				kinect->drawLabel(450, 20, 400, 300);
+		
+				// draw skeleton images on video images
+				kinect->drawSkeleton(20, 20, 400, 300);
+
+			}else{
+				kinectPlayer.draw(20, 20, 400, 300);
+				ofEnableAlphaBlending();
+				kinectPlayer.drawDepth(20, 340, 400, 300);
+				kinectPlayer.drawLabel(20, 340, 400, 300);
 
 		
-			kinectPlayer.drawSkeleton(20, 20, 400, 300);
+				kinectPlayer.drawSkeleton(20, 20, 400, 300);
+			}
 		}
-	}
 
-	ofPushMatrix();
-	ofTranslate(35, 35);
-	ofFill();
-	if(bRecord) {
-		ofSetColor(255, 0, 0);
-		ofCircle(0, 0, 10);
-	}
-	if(bPlayback) {
-		ofSetColor(0, 255, 0);
-		ofTriangle(-10, -10, -10, 10, 10, 0);
-	}
-	ofPopMatrix();
+		ofPushMatrix();
+		ofTranslate(35, 35);
+		ofFill();
+		if(bRecord) {
+			ofSetColor(255, 0, 0);
+			ofCircle(0, 0, 10);
+		}
+		if(bPlayback) {
+			ofSetColor(0, 255, 0);
+			ofTriangle(-10, -10, -10, 10, 10, 0);
+		}
+		ofPopMatrix();
 
-	stringstream kinectReport;
-	if(bPlugged && !kinect->isOpened() && !bPlayback){
-		ofSetColor(0, 255, 0);
-		kinectReport << "Kinect is plugged..." << endl;
-		ofDrawBitmapString(kinectReport.str(), 200, 300);
-	}else if(!bPlugged){
-		ofSetColor(255, 0, 0);
-		kinectReport << "Kinect is unplugged..." << endl;
-		ofDrawBitmapString(kinectReport.str(), 200, 300);
+		stringstream kinectReport;
+		if(bPlugged && !kinect->isOpened() && !bPlayback){
+			ofSetColor(0, 255, 0);
+			kinectReport << "Kinect is plugged..." << endl;
+			ofDrawBitmapString(kinectReport.str(), 200, 300);
+		}else if(!bPlugged){
+			ofSetColor(255, 0, 0);
+			kinectReport << "Kinect is unplugged..." << endl;
+			ofDrawBitmapString(kinectReport.str(), 200, 300);
+		}
 	}
 }
 
 void   Kinect440::exit() {
-	if(calibratedTexture.bAllocated()){
-		calibratedTexture.clear();
-	}
+	if(!NO_KINECT_DEBUG) {
+		if(calibratedTexture.bAllocated()){
+			calibratedTexture.clear();
+		}
 
-	if(videoDraw_) {
-		videoDraw_->destroy();
-		videoDraw_ = NULL;
-	}
-	if(depthDraw_) {
-		depthDraw_->destroy();
-		depthDraw_ = NULL;
-	}
-	if(labelDraw_) {
-		labelDraw_->destroy();
-		labelDraw_ = NULL;
-	}
-	if(skeletonDraw_) {
-		delete skeletonDraw_;
-		skeletonDraw_ = NULL;
-	}
+		if(videoDraw_) {
+			videoDraw_->destroy();
+			videoDraw_ = NULL;
+		}
+		if(depthDraw_) {
+			depthDraw_->destroy();
+			depthDraw_ = NULL;
+		}
+		if(labelDraw_) {
+			labelDraw_->destroy();
+			labelDraw_ = NULL;
+		}
+		if(skeletonDraw_) {
+			delete skeletonDraw_;
+			skeletonDraw_ = NULL;
+		}
 
-	kinect->setAngle(0);
-	kinect->close();
-	kinect->removeKinectListener(this);
-	kinectPlayer.close();
-	kinectRecorder.close();
+		kinect->setAngle(0);
+		kinect->close();
+		kinect->removeKinectListener(this);
+		kinectPlayer.close();
+		kinectRecorder.close();
+	}
 
 }
 
@@ -220,128 +229,139 @@ void Kinect440::kinectUnplugged() {
 }
 
 void   Kinect440::startRecording(){
-	if(!bRecord){
-		// stop playback if running
-		stopPlayback();
+	if(!NO_KINECT_DEBUG) {
+		if(!bRecord){
+			// stop playback if running
+			stopPlayback();
 
-		kinectRecorder.setup(*kinect, "recording.dat");
-		bRecord = true;
+			kinectRecorder.setup(*kinect, "recording.dat");
+			bRecord = true;
+		}
 	}
 }
 
 
 void   Kinect440::startPlayback(){
-	if(!bPlayback){
-		stopRecording();
-		kinect->close();
+	if(!NO_KINECT_DEBUG) {
+		if(!bPlayback){
+			stopRecording();
+			kinect->close();
 
-		// set record file and source
-		kinectPlayer.setup("recording.dat");
-		kinectPlayer.loop();
-		kinectPlayer.play();
-		kinectSource = &kinectPlayer;
-		bPlayback = true;
+			// set record file and source
+			kinectPlayer.setup("recording.dat");
+			kinectPlayer.loop();
+			kinectPlayer.play();
+			kinectSource = &kinectPlayer;
+			bPlayback = true;
+		}
 	}
 }
 
 void   Kinect440::stopPlayback(){
-	if(bPlayback){
-		kinectPlayer.close();
-		kinect->open();
-		kinectSource = kinect;
-		bPlayback = false;
+	if(!NO_KINECT_DEBUG) {
+		if(bPlayback){
+			kinectPlayer.close();
+			kinect->open();
+			kinectSource = kinect;
+			bPlayback = false;
+		}
 	}
 }
 
 void   Kinect440::stopRecording(){
-	if(bRecord){
-		kinectRecorder.close();
-		bRecord = false;
+	if(!NO_KINECT_DEBUG) {
+		if(bRecord){
+			kinectRecorder.close();
+			bRecord = false;
+		}
 	}
 }
 
 ofPoint Kinect440::getSkeletonJoint(int player,int joint){
+	if(!NO_KINECT_DEBUG) {
+		if(player == FIRST_ACTIVE){
+			player = updateActivePlayer();
+		}
 
-	if(player == FIRST_ACTIVE){
-		player = updateActivePlayer();
-	}
-
-	//Sanity Check
-	if(player > ofxKinectNui::SKELETON_COUNT || joint > ofxKinectNui::SKELETON_POSITION_COUNT || player < 0 || joint < 0 ) {
+		//Sanity Check
+		if(player > ofxKinectNui::SKELETON_COUNT || joint > ofxKinectNui::SKELETON_POSITION_COUNT || player < 0 || joint < 0 ) {
 	
-		printf("440 [WARNING] getSkeletonPoint: Attempting to get a player or index greater than the possible maximum or less than zero. Player = %i; joint = %i ; Returning (0,0)\n",player,joint);
+			printf("440 [WARNING] getSkeletonPoint: Attempting to get a player or index greater than the possible maximum or less than zero. Player = %i; joint = %i ; Returning (0,0)\n",player,joint);
 
-		return ofPoint(0,0);
+			return ofPoint(0,0);
 	
-	}else {
+		}else {
 
-		return skeletonLerpModel[player][joint];
+			return skeletonLerpModel[player][joint];
+		}
 	}
 }
 
 ofPoint Kinect440::getMappedJoint(int player,int joint){
+	if(!NO_KINECT_DEBUG) {
+		if(player == FIRST_ACTIVE){
+			player = updateActivePlayer();
+		}
 
-	if(player == FIRST_ACTIVE){
-		player = updateActivePlayer();
-	}
-
-	//Sanity Check
-	if(player > ofxKinectNui::SKELETON_COUNT || joint > ofxKinectNui::SKELETON_POSITION_COUNT || player < 0 || joint < 0 ) {
+		//Sanity Check
+		if(player > ofxKinectNui::SKELETON_COUNT || joint > ofxKinectNui::SKELETON_POSITION_COUNT || player < 0 || joint < 0 ) {
 	
-		printf("440 [WARNING] getMappedRawPoint: Attempting to get a player or index greater than the possible maximum or less than zero. Player = %i; joint = %i ; Returning (0,0)\n",player,joint);
+			printf("440 [WARNING] getMappedRawPoint: Attempting to get a player or index greater than the possible maximum or less than zero. Player = %i; joint = %i ; Returning (0,0)\n",player,joint);
 
-		return ofPoint(0,0);
+			return ofPoint(0,0);
 	
-	}else {
+		}else {
 
-		ofPoint p;
+			ofPoint p;
 
-		p.x = ofMap(kinect->skeletonPoints[player][joint].x,0,320,0,ofGetWindowWidth());
-		p.y = ofMap(kinect->skeletonPoints[player][joint].y,0,240,0,ofGetWindowHeight());
+			p.x = ofMap(kinect->skeletonPoints[player][joint].x,0,320,0,ofGetWindowWidth());
+			p.y = ofMap(kinect->skeletonPoints[player][joint].y,0,240,0,ofGetWindowHeight());
 
-		return p;
+			return p;
+		}
 	}
 }
 
 ofPoint Kinect440::getRawJoint(int player,int joint){
+	if(!NO_KINECT_DEBUG) {
 
+		if(player == FIRST_ACTIVE){
+			player = updateActivePlayer();
+		}
 
-	if(player == FIRST_ACTIVE){
-		player = updateActivePlayer();
-	}
-
-	//Sanity Check
-	if(player > ofxKinectNui::SKELETON_COUNT || joint > ofxKinectNui::SKELETON_POSITION_COUNT || player < 0 || joint < 0 ) {
+		//Sanity Check
+		if(player > ofxKinectNui::SKELETON_COUNT || joint > ofxKinectNui::SKELETON_POSITION_COUNT || player < 0 || joint < 0 ) {
 	
-		printf("440 [WARNING] getMappedRawPoint: Attempting to get a player or index greater than the possible maximum or less than zero. Player = %i; joint = %i ; Returning (0,0)\n",player,joint);
+			printf("440 [WARNING] getMappedRawPoint: Attempting to get a player or index greater than the possible maximum or less than zero. Player = %i; joint = %i ; Returning (0,0)\n",player,joint);
 
-		return ofPoint(0,0);
+			return ofPoint(0,0);
 	
-	}else {
+		}else {
 
 
-		ofPoint p;
+			ofPoint p;
 
-		p.x = kinect->skeletonPoints[player][joint].x;
-		p.y = kinect->skeletonPoints[player][joint].y;
-		return p;
+			p.x = kinect->skeletonPoints[player][joint].x;
+			p.y = kinect->skeletonPoints[player][joint].y;
+			return p;
+		}
 	}
 
 }
 
 
 int Kinect440::updateActivePlayer() {
-	
-	for(int i = 0; i < ofxKinectNui::SKELETON_COUNT; i++) {
+	if(!NO_KINECT_DEBUG) {
+		for(int i = 0; i < ofxKinectNui::SKELETON_COUNT; i++) {
 
-		if(kinect->skeletonPoints[i][0].z > 0){
+			if(kinect->skeletonPoints[i][0].z > 0){
 			
-			return i;
+				return i;
+
+			}
 
 		}
 
+		return 0;
 	}
-
-	return 0;
-
 }

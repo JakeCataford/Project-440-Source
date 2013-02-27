@@ -5,13 +5,16 @@ void VisualiserManager::init(Audio440& audio, Kinect440& kinect) {
 	
 	aud = &audio;
 	kin = &kinect;
-
+	theme = ColorTheme();
 	vcr = VCR();
 	tunnel = Tunnel();
-	vcr.init(audio,kinect);
-	tunnel.init(audio,kinect);
+	tree = Tree();
+	vcr.init(audio,kinect,theme);
+	tunnel.init(audio,kinect,theme);
+	tree.init(audio,kinect,theme);
 	visualiserPtrs.push_back(&tunnel);
 	visualiserPtrs.push_back(&vcr);
+	visualiserPtrs.push_back(&tree);
 	current = 0;
 	previous = visualiserPtrs.size() - 1;
 

@@ -11,6 +11,7 @@ void testApp::setup() {
 
 	
 	audio = Audio440();
+
 	kinect = Kinect440();
 	midi = Midi();
 	midi.init(kinect);
@@ -21,7 +22,7 @@ void testApp::setup() {
 	
 	ofSetVerticalSync(true);
 
-	ofSetFrameRate(60);
+	ofSetFrameRate(30);
 	ofEnableSmoothing();
 	//Debug
 	midiDebug = false;
@@ -111,12 +112,16 @@ void testApp::keyPressed (int key) {
 			//kinect.startPlayback();
 		}
 		break;
+	case 'q':
+		vmanager.theme.newTheme();
+		break;
 	default:
 		printf("[Warning] Key not bound.\n");
 		break;
 	
 	
 	}
+
 }
 
 //--------------------------------------------------------------

@@ -6,43 +6,13 @@
 #include "IVisualiserBase.h"
 #include "Scanlines.h"
 
-class TunnelParticle{
-public:
-	TunnelParticle(float x,float y, float z, float sx, float sy, float sz) : age(1) {
-		position = ofVec3f(x,y,z);
-		speed = ofVec3f(sx,sy,sz);
-	
-	};
-	~TunnelParticle(){};
-
-	void update() {
-
-		position += speed;
-
-		age++;
-	};
-
-	void draw(float amp) {
-		ofPushMatrix();
-		ofPushStyle();
-		ofSetColor(255,255,255);
-		ofTranslate(position);
-		ofSphere(amp);
-		ofPopStyle();
-		ofPopMatrix();
-
-	}
-	float age;
-	ofPoint position;
-	ofVec3f speed;
-};
 
 
-class Tunnel : public VisualiserBase {
+class Tree : public VisualiserBase {
 
 public:
-	Tunnel() : isCleanup(false),isIntro(false),introCounter(0),isOutro(false){};
-	~Tunnel(){};
+	Tree() : isCleanup(false),isIntro(false),introCounter(0),isOutro(false){};
+	~Tree(){};
 	void init(Audio440&,Kinect440&,ColorTheme&); //Setup vars and refs and such
 	void queueIntro(); //Switch on the boolean to start and set up initial vals
 	void draw(); //Standard draw loop (also draws intro and outro, use conditionals)
@@ -63,13 +33,13 @@ private:
 	bool isIntro;
 	bool isOutro;
 	int introCounter;
-	ofFbo tunnel;
+	ofFbo fbo;
 	ofCamera camera;
 	int prevamp;
 	float offset;
 	ofShader bulge;
 	Scanlines scan;
 	ofImage flash;
-	vector <TunnelParticle> parts;
 	ofLight light;
+	ofEasyCam cam;
 };

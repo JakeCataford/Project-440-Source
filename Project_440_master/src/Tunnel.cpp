@@ -1,10 +1,10 @@
 #include "Tunnel.h"
 
-void Tunnel::init(Audio440& aud,Kinect440& kin){
+void Tunnel::init(Audio440& aud,Kinect440& kin,ColorTheme& the){
 
 	audio = &aud;
 	kinect = &kin;
-	
+	theme = &the;
 	mesh = ofMesh();
 	age = 0;
 	mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
@@ -14,7 +14,7 @@ void Tunnel::init(Audio440& aud,Kinect440& kin){
 	offset = 0;
 	prevamp = 0;
 	basic.load("shaders/default");
-		bulge.load("shaders/bulge");
+	bulge.load("shaders/bulge");
 	
 	generate();
 	light.setup();
@@ -53,8 +53,8 @@ void Tunnel::draw(){
 			for(int j = 1; j < 11; j++) {
 				mesh.addVertex(ofVec3f((sin((double)((2*PI)/10)*j)*(ofGetHeight()/4)),(cos((double)((2*PI)/10)*j)*(ofGetHeight()/4)),-i*100  + offset + 1000 ));
 				mesh.addVertex(ofVec3f((sin((double)((2*PI)/10)*j)*(ofGetHeight()/4)),(cos((double)((2*PI)/10)*j)*(ofGetHeight()/4)),-i*100  + offset + 100 + 1000 ));
-				mesh.addColor(ofColor::fromHsb(136,audio->getAvgBin((i*10 + j) % 14)*25,audio->getAvgBin((i*10 + j) % 14)*25));
-				mesh.addColor(ofColor::fromHsb(131,audio->getAvgBin((i*10 + j) % 14)*25,audio->getAvgBin((i*10 + j) % 14)*25));
+				mesh.addColor(ofColor::fromHsb(theme->color1.getHue(),audio->getAvgBin((i*10 + j) % 14)*25,audio->getAvgBin((i*10 + j) % 14)*25));
+				mesh.addColor(ofColor::fromHsb(theme->color1.getHue(),audio->getAvgBin((i*10 + j) % 14)*25,audio->getAvgBin((i*10 + j) % 14)*25));
 			}
 				
 		}
@@ -70,7 +70,7 @@ void Tunnel::draw(){
 		ofRotateZ(age*10);
 		mesh.drawFaces();
 		ofPushStyle();
-		ofSetColor(ofColor::fromHsb(180,audio->getAvgBin(0)*25,audio->getAvgBin(1)*25));
+		ofSetColor(ofColor::fromHsb(theme->color3.getHue(),audio->getAvgBin(0)*25,audio->getAvgBin(1)*25));
 		ofPushMatrix();
 		ofRotateX(age*20);
 		ofRotateY(age*10);
@@ -104,7 +104,7 @@ void Tunnel::draw(){
 		ofPopMatrix();
 		glDisable(GL_DEPTH_TEST);
 		//glDisable(GL_FOG);
-		light.draw();
+		//light.draw();
 		//light.disable();
 		scan.draw();
 		light.disable();
@@ -131,13 +131,13 @@ void Tunnel::draw(){
 		}
 
 		if(isIntro && introCounter < 200) {
-			introCounter++;
+			introCounter+= 10;
 		}else if(isIntro){
 			isIntro = false;
 		}
 
 		if(isOutro && introCounter > 0) {
-			introCounter--;
+			introCounter-= 10;
 		}else if(isOutro) {
 			isOutro = false;
 			isCleanup = true;

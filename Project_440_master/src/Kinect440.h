@@ -1,9 +1,11 @@
 #pragma once
-
+#define NO_KINECT_DEBUG true
 #include "ofxKinectNui.h"
+
 //#include "ofMain.h"
 #include "ofxKinectNuiPlayer.h"
 #include "ofxKinectNuiRecorder.h"
+
 
 using namespace std;
 
