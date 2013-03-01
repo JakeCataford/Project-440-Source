@@ -122,3 +122,7 @@ float Audio440::getRawAmp() {
 
 	return ofMap(20* log10(rawAmp),0,20,0,10,true);
 }
+
+float Audio440::getBin(int i) {
+	return ofMap(20* log10(softMagnitude[i]),0,20,0,10,true);
+}

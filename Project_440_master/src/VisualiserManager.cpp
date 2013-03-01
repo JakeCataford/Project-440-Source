@@ -1,20 +1,24 @@
 #include "VisualiserManager.h"
 
-void VisualiserManager::init(Audio440& audio, Kinect440& kinect) {
+void VisualiserManager::init(Audio440& audio,Kinect440& kinect) {
 	
 	
 	aud = &audio;
 	kin = &kinect;
 	theme = ColorTheme();
+	theme.newTheme();
 	vcr = VCR();
 	tunnel = Tunnel();
-	tree = Tree();
+	flies = Fireflies();
+	idle = Idle();
+	idle.init(audio,kinect,theme);
 	vcr.init(audio,kinect,theme);
 	tunnel.init(audio,kinect,theme);
-	tree.init(audio,kinect,theme);
+	flies.init(audio,kinect,theme);
+	visualiserPtrs.push_back(&idle);
 	visualiserPtrs.push_back(&tunnel);
 	visualiserPtrs.push_back(&vcr);
-	visualiserPtrs.push_back(&tree);
+	visualiserPtrs.push_back(&flies);
 	current = 0;
 	previous = visualiserPtrs.size() - 1;
 
@@ -63,5 +67,8 @@ void VisualiserManager::update() {
 	if(!visualiserPtrs[previous]->getCleanupState()){
 		visualiserPtrs[previous]->update();
 	}
+
+	
+	
 
 }

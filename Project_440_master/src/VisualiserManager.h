@@ -5,7 +5,9 @@
 #include "IVisualiserBase.h"
 #include "VCR.h"
 #include "Tunnel.h"
-#include "Tree.h"
+#include "Idle.h"
+#include "Midi.h"
+#include "Fireflies.h"
 
 class VisualiserManager {
 
@@ -23,13 +25,14 @@ public:
 	//references
 	Audio440* aud;
 	Kinect440 * kin;
-
+	Midi * midi;
 
 	ColorTheme theme;
 	//Visualisers
 	VCR vcr;
 	Tunnel tunnel;
-	Tree tree;
+	Idle idle;
+	Fireflies flies;
 
 	int current;
 	int previous;

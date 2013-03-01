@@ -13,6 +13,7 @@ public:
 	Kinect440* kinect; 
 
 	void init(Kinect440&);
+	void update();
 
 	//Setters
 	void setControllerValue(int controller, float value);

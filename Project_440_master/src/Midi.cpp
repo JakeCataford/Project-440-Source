@@ -89,3 +89,9 @@ void Midi::drawDebugScreen(bool scannerTest) {
 
 
 }
+
+void Midi::update() {
+	setControllerValue(10,ofMap(kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HEAD).x,0,640,0,127,true));
+	setControllerValue(11,ofMap(kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HAND_LEFT).y,0,480,0,127,true));
+	setControllerValue(12,ofMap(kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HAND_RIGHT).y,0,480,0,127,true));
+}

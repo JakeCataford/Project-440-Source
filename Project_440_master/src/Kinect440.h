@@ -1,5 +1,5 @@
 #pragma once
-#define NO_KINECT_DEBUG true
+#define NO_KINECT_DEBUG false
 #include "ofxKinectNui.h"
 
 //#include "ofMain.h"

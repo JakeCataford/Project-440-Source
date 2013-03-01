@@ -23,6 +23,7 @@ class Audio440 {
 		float getRawAmp();
 		float getAmp();
 		float getAvgBin(int);
+		float getBin(int);
 		//Debug
 		void drawAudioDebug();
 

@@ -40,6 +40,7 @@ void testApp::setup() {
 
 //--------------------------------------------------------------
 void testApp::update() {
+	midi.update();
 	kinect.update();
 	vmanager.update();
 	if(midiDebug) {

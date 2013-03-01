@@ -23,9 +23,9 @@ void ColorTheme::ctFadeOut()
 //----------------------------------------------------------------------------------
 void ColorTheme::newTheme()
 {
-	color1 = ofColor::fromHsb(ofRandom(255),ofRandom(100,200),255);
+	color1 = ofColor::fromHsb(ofRandom(0,255),ofRandom(20,255),255);
 
-	color2 = ofColor::fromHsb(color1.getHue()*0.9,color1.getSaturation(),200);
+	color2 = ofColor::fromHsb(color1.getHue()*0.9,color1.getSaturation()*0.4,color1.getBrightness());
 
 	float complement = color1.getHue();
 	if(complement+127.5 > 255){
@@ -34,9 +34,9 @@ void ColorTheme::newTheme()
 		complement = color1.getHue() + 127.5;
 	}
 
-	color3 = ofColor::fromHsb(complement,color1.getSaturation(),255);
+	color3 = ofColor::fromHsb(complement,color1.getSaturation(),color1.getBrightness());	
 
-	color4 = ofColor::fromHsb(color1.getHue(),color1.getSaturation()-60,100);
+	color4 = ofColor::fromHsb(color1.getHue(),color1.getSaturation(),color1.getBrightness());
 }
 
 //----------------------------------------------------------------------------------
