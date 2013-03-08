@@ -11,9 +11,9 @@ class pEllipse
 {
 public:
 	/********** CONSTRUCTOR **********/
-	pEllipse(float pSize, ColorTheme &curTheme){
+	pEllipse(float pSize, ColorTheme &curTheme, Kinect440& kin){
 		colorTheme = &curTheme;
-
+		kinect = &kin;
 		px = rand() % ofGetWidth();
 		py = rand() % ofGetHeight();
 		pWidth = pSize;
@@ -29,13 +29,40 @@ public:
 	~pEllipse(void){};
 
 	/********** UPDATE **********/
-	void update(){
+	void update(float pSize){
+
+		float inflation = 10;
+
 		if (px < 0){ pxD *= -1; px = 0;}
 		else if (px > ofGetWidth() + 100){ pxD *= -1; px = ofGetWidth();}
 		else if (py < 0){ pyD *= -1; py = 0;}
 		else if (py > ofGetHeight()){ pyD *= -1; py = ofGetHeight();}
 
+		ofPoint pointLeftHand = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE, NUI_SKELETON_POSITION_HAND_LEFT);
+		ofPoint pointRightHand = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE, NUI_SKELETON_POSITION_HAND_RIGHT);
+
+		ofVec2f forceLeft = ofVec2f((pointLeftHand.x - px), (pointLeftHand.y - py));
+		ofVec2f forceRight = ofVec2f((pointRightHand.x - px), (pointRightHand.y - py));
+		
+		forceLeft = forceLeft.normalize();
+		forceRight = forceRight.normalize();
+
+		if(abs(ofDist(pointLeftHand.x, pointLeftHand.y, px, py)+1) < 800){
+			forceLeft *= ((1/abs(ofDist(pointLeftHand.x, pointLeftHand.y, px, py))+1)*1200)/abs(ofDist(pointLeftHand.x, pointLeftHand.y, px, py)+1);
+			
+			px -= forceLeft.x;
+			py -= forceLeft.y;
+		}
+
+		if(abs(ofDist(pointRightHand.x, pointRightHand.y, px, py)+1) < 800){
+			forceRight *= ((1/abs(ofDist(pointRightHand.x, pointRightHand.y, px, py))+1)*1200)/abs(ofDist(pointRightHand.x, pointRightHand.y, px, py)+1);
+		
+			px -= forceRight.x;
+			py -= forceRight.y;
+		}
+
 		px += pxD;
+
 		py += pyD;
 	};
 
@@ -101,6 +128,7 @@ public:
 	float prevW, prevH;
 	ColorTheme * colorTheme;
 	float colorChoice;
+	Kinect440 * kinect;
 };
 
 class Fireflies :
@@ -141,6 +169,9 @@ private:
 
 	ofShader abr;
 	ofFbo abrFbo;
+
+	float rangeX, rangeY, kinectHandSize;
+	ofPoint pointLeftHand, pointRightHand, pointHead;
 
 	float bandAverage, prevBandAverage;
 };

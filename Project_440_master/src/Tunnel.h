@@ -72,4 +72,7 @@ private:
 	ofImage flash;
 	vector <TunnelParticle> parts;
 	ofLight light;
+
+	float rangeX, rangeY, kinectHandSize;
+	ofPoint pointLeftHand, pointRightHand, pointHead;
 };

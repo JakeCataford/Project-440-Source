@@ -32,7 +32,7 @@ public:
 
 	void kinectPlugged();
 	void kinectUnplugged();
-		
+
 	void startRecording();
 	void stopRecording();
 	void startPlayback();
@@ -43,7 +43,7 @@ public:
 	ofPoint getMappedJoint(int,int); //Raw, Scaled Joint
 	ofPoint getRawJoint(int,int); //Raw unscaled joint
 
-	
+
 
 	int updateActivePlayer();
 	bool isPlayerActive();
@@ -66,12 +66,12 @@ public:
 	bool bDrawCalibratedTexture;
 	bool bPlugged;
 	bool bUnplugged;
-		
+
 	unsigned short nearClipping;
 	unsigned short farClipping;
 	int angle;
 
-		
+
 	int mRotationX, mRotationY;
 
 	ofPoint skeletonLerpModel[ofxKinectNui::SKELETON_COUNT][ofxKinectNui::SKELETON_POSITION_COUNT];

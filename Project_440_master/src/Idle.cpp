@@ -35,7 +35,8 @@ void Idle::draw(){
 			ofClear(0);
 			ofPushStyle();
 			
-			ofSetColor(ofColor::fromHsb(111,200,255,40));
+			//ofSetColor(ofColor::fromHsb(111,200,255,40));
+			ofSetColor(ofColor::fromHsb(theme->color1.getHue(), theme->color1.getSaturation(), theme->color1.getBrightness()), 40);
 			ofRect(0,0,0,ofGetWidth(),ofGetHeight());
 				 ofSetColor(255,255,255,255);
 

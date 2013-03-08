@@ -21,10 +21,13 @@ void Tunnel::init(Audio440& aud,Kinect440& kin,ColorTheme& the){
 	light.setPointLight();
 	light.setPosition(ofGetWidth()/2,ofGetHeight()/2,-100);
 	
+	flash.loadImage("images/flashorb.png");
+	flash.resize(ofGetHeight(),ofGetHeight());
 
-	
-	
+	rangeX = 500;
+	rangeY = 500;
 
+	kinectHandSize = 100;
 } 
 void Tunnel::queueIntro(){
 	
@@ -59,22 +62,49 @@ void Tunnel::draw(){
 				
 		}
 
+		//KINECT STUFF
 		
-	
-	
+		if(kinect->updateActivePlayer() != 0){
+			pointHead = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE, NUI_SKELETON_POSITION_HEAD);
+			pointLeftHand = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE, NUI_SKELETON_POSITION_HAND_LEFT);
+			pointRightHand = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE, NUI_SKELETON_POSITION_HAND_RIGHT);
+		}
+
+		rangeX = ofMap(pointHead.x, 0, ofGetWidth(), 15, -15);
+		rangeY = ofMap(pointHead.y, 0, ofGetHeight(), -10, 20);
+
+		kinectHandSize = abs(ofDist(pointLeftHand.x, pointLeftHand.y, pointRightHand.x, pointRightHand.y));
+		
+		kinectHandSize = ofMap(kinectHandSize, 0, ofGetWidth(), 0.5, 2);
+
 		ofClear(0);
 		//ofBackground(255,255,255);
 		ofPushMatrix();
 		ofTranslate(ofGetWidth()/2 + (sin(age)*50),ofGetHeight()/2 + (cos(age/2.25)*50));
-		ofRotateX(sin(age)*5);
-		ofRotateZ(age*10);
+		ofRotateX(rangeY);
+		ofRotateY(rangeX);
+		//ofRotateZ(age*10);
 		mesh.drawFaces();
 		ofPushStyle();
 		ofSetColor(ofColor::fromHsb(theme->color3.getHue(),audio->getAvgBin(0)*25,audio->getAvgBin(1)*25));
 		ofPushMatrix();
 		ofRotateX(age*20);
 		ofRotateY(age*10);
-		ofBox(audio->getAvgBin(0)*(ofGetHeight()/30)*((float)introCounter/200));
+		
+		//extra two cubes, can be taken out if necessary or you don't like it
+		if(audio->getAmp() > 0.5){
+			ofPushMatrix();
+			ofTranslate(-200, -200, -200);
+			ofBox(audio->getAvgBin(0)*(ofGetHeight()/30)*((float)introCounter/200)   *kinectHandSize    /3);
+			ofPopMatrix();
+
+			ofPushMatrix();
+			ofTranslate(200, 200, 200);
+			ofBox(audio->getAvgBin(0)*(ofGetHeight()/30)*((float)introCounter/200)   *kinectHandSize    /3);
+			ofPopMatrix();
+		}
+
+		ofBox(audio->getAvgBin(0)*(ofGetHeight()/30)*((float)introCounter/200)   *kinectHandSize);
 		ofPopMatrix();
 		ofPopStyle();
 		age += 0.01;
@@ -82,6 +112,7 @@ void Tunnel::draw(){
 		if(audio->getAmp() - prevamp >= 3 && prevamp < 5) {
 			generate();
 		}
+
 
 		for(int i = 0; i < parts.size(); i++) {
 			if(parts[i].position.z > 4000) {
@@ -92,7 +123,7 @@ void Tunnel::draw(){
 		}
 
 		while(parts.size() < 300) {
-			parts.push_back(TunnelParticle(ofRandom(0,ofGetHeight()),ofRandom(0,ofGetHeight()/2),ofRandom(-1000,-800),ofRandom(-1,1),ofRandom(-1,1),ofRandom(30,50)));
+			parts.push_back(TunnelParticle(ofRandom(-ofGetWidth()/2,ofGetWidth()/2),ofRandom(-ofGetHeight()/2,ofGetHeight()/2),ofRandom(-1000,-800),ofRandom(-1,1),ofRandom(-1,1),ofRandom(30,50)));
 
 		}
 
@@ -107,22 +138,40 @@ void Tunnel::draw(){
 		//light.draw();
 		//light.disable();
 		scan.draw();
+
+		ofPushStyle();
+
+			ofSetColor(theme->color3);
+			ofFill();
+
+			ofPushMatrix();
+				ofTranslate(pointLeftHand.x, pointLeftHand.y, -1000);
+				ofSphere(50);
+			ofPopMatrix();
+
+			ofPushMatrix();
+				ofTranslate(pointRightHand.x, pointRightHand.y, -1000);
+				ofSphere(50);
+			ofPopMatrix();
+
+		ofPopStyle();
+
 		light.disable();
 		ofDisableLighting();
-		tunnel.end();
 		
+		
+
+		tunnel.end();
+
 		bulge.begin();
 			bulge.setUniform1f("width", ofGetWidth()/2);
 			bulge.setUniform1f("height", ofGetHeight()/2);
 			bulge.setUniform1f("radius", (ofMap(audio->getAvgBin(0),0,10,1.0,-0.3))*((float)introCounter/200));
 			tunnel.draw(0,0);
-				
 			
 		bulge.end();
 		
 		offset += 30;
-
-		
 
 		glShadeModel(GL_SMOOTH);
 

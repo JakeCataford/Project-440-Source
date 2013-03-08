@@ -19,19 +19,19 @@ void VCR::init(Audio440& aud,Kinect440& kin, ColorTheme& the){
 	lastAmp = 0;
 	isOutro = false;
 }
-	
+
 void VCR::queueIntro(){
 	intro = 0.0f;
 	isOutro = false;
 	isCleanup = false;
 }
 void VCR::draw(){
-	
+
 
 	if(!isCleanup) {
 		fbo.begin();
 			ofPushMatrix();
-				
+
 				ofRotateY(sin((double)age/200)*5);
 				//ofClear(0);
 				ofBackground(0,0,0, intro*255);
@@ -40,11 +40,11 @@ void VCR::draw(){
 
 
 				if(audio->getAmp() - lastAmp > 0.3) {
-	
+
 					for(int i = 0; i < 10; i++){
 					particles.push_back(VCRParticle(-100,ofRandom(0,ofGetHeight()),ofRandom(5,25),ofRandom(-1,1)));
 					particles.push_back(VCRParticle(ofGetWidth() + 100,ofRandom(0,ofGetHeight()),ofRandom(-5,-25),ofRandom(-1,1)));
-	
+
 
 					}
 				}
@@ -84,7 +84,7 @@ void VCR::draw(){
 				ofPushMatrix();
 					ofPushStyle();
 						ofSetColor(theme->color1.r,theme->color1.g,theme->color1.b);
-	
+
 							ofTranslate(ofGetWidth()/2,ofGetHeight()/2);
 
 							ofPoint head = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HEAD);
@@ -94,7 +94,7 @@ void VCR::draw(){
 							float y = head.y - hip.y;
 
 							float result = atan2 (y,x) * 180 / PI;
-							
+
 							ofRotateZ(result*2);
 
 							//atan2 to find rad
@@ -133,12 +133,12 @@ void VCR::draw(){
 				ofPushMatrix();
 					ofPushStyle();
 						ofSetColor(theme->color3.r,theme->color3.g,theme->color3.b);
-	
+
 							ofTranslate(ofGetWidth()/2,ofGetHeight()/2);
 							ofRotateZ(result);      
 							//ofRotateZ(sin(age/50)*90 +45);
 							ofRotateY(sin((age)/10)*30);
-		
+
 							for(int i = 0; i< 3; i++) {
 								for(int j = 0; j < 3; j++) {
 									ofRect(-ofGetHeight()/4 + squoffset*i,-ofGetHeight()/4 + squoffset* j,0,ofMap(audio->getAvgBin(i*2 + j*2),0,5,0,squoffset)*intro,ofMap(audio->getAvgBin(i*2 + j*2),0,5,0,squoffset)*intro);
@@ -156,7 +156,7 @@ void VCR::draw(){
 						ofRect(0,0,0,(audio->getAmp()*10)*intro,(audio->getAmp()*10)*intro);
 					ofPopStyle();
 				ofPopMatrix();
-			
+
 
 				ofPushMatrix();
 					ofPushStyle();
@@ -175,13 +175,13 @@ void VCR::draw(){
 						ofSetColor(audio->getAmp()*45,audio->getAmp()*45,audio->getAmp()*45,(audio->getAmp()*45)*intro);
 						flash.draw(sin(age/100)*ofGetWidth()/4  + ofGetWidth()/2 - flash.width/2,cos(age/100)*ofGetHeight()/4 + ofGetHeight()/2 - flash.height/2,flash.height,flash.width);
 						glDisable(GL_BLEND);
-			
+
 					ofPopStyle();
 				ofPopMatrix();
-	
+
 			ofPopMatrix();
 
-	
+
 
 			lastAmp = audio->getAmp();
 
@@ -191,7 +191,7 @@ void VCR::draw(){
 
 
 		abr.begin();
-		
+
 			abrFbo.begin();
 				abr.setUniform1f("amount", audio->getAvgBin(5)*50);
 				abr.setUniform1f("intensity", ofMap(audio->getAmp(),0,8,0.1,0.3));
@@ -204,15 +204,15 @@ void VCR::draw(){
 			bulge.setUniform1f("width", ofGetWidth()/2);
 			bulge.setUniform1f("height", ofGetHeight()/2);
 			bulge.setUniform1f("radius", (ofMap(audio->getAvgBin(5),0,10,1.0,-0.3))*intro);
-			
+
 
 			fbo.draw(0,0,ofGetWidth(),ofGetHeight());
-	
-	
+
+
 			abrFbo.draw(0,0);
 		bulge.end();
 
-		
+
 	}
 
 

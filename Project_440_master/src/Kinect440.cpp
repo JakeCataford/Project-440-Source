@@ -7,7 +7,7 @@ void  Kinect440::init(ofxKinectNui& kinref) {
 
 	if(!NO_KINECT_DEBUG) {
 		kinect = &kinref;
-	
+
 
 	ofxKinectNui::InitSetting initSetting;
 	initSetting.grabVideo = true;
@@ -30,12 +30,12 @@ void  Kinect440::init(ofxKinectNui& kinref) {
 	bPlugged = kinect->isConnected();
 	nearClipping = kinect->getNearClippingDistance();
 	farClipping = kinect->getFarClippingDistance();
-	
+
 	bDrawVideo = false;
 	bDrawDepthLabel = false;
 	bDrawSkeleton = false;
 	bDrawCalibratedTexture = false;
-	
+
 
 	videoDraw_ = ofxKinectNuiDrawTexture::createTextureForVideo(kinect->getVideoResolution());
 	depthDraw_ = ofxKinectNuiDrawTexture::createTextureForDepth(kinect->getDepthResolution());
@@ -60,7 +60,7 @@ void   Kinect440::update() {
 		for(int i = 0; i < ofxKinectNui::SKELETON_COUNT; i++) {
 			if(kinect->skeletonPoints[i][0].z > 0){
 				for(int j = 0; j < kinect->SKELETON_POSITION_COUNT; j++) {
-			
+
 					if(kinect->skeletonPoints[i][j].x > 0 && kinect->skeletonPoints[i][j].y) {
 						//update the lerp model
 						skeletonLerpModel[i][j].x += (ofMap(kinect->skeletonPoints[i][j].x,0,320,0,ofGetWindowWidth()) - skeletonLerpModel[i][j].x)*0.5;
@@ -69,7 +69,7 @@ void   Kinect440::update() {
 					}
 
 
-			
+
 
 				}
 			}
@@ -83,7 +83,7 @@ void Kinect440::drawSkeletonDebugScreen() {
 		stringstream s;
 		s << "Kinect Skeleton Debugger:\n"
 		<< "red is the raw values, maroon is the Lerped vals, green is the mapped vals, displaying Raw vals numerically\n";
-	
+
 		//kinect->drawVideo(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
 		kinect->drawLabel(0, 0, ofGetWindowWidth(), ofGetWindowHeight()); //Lets Draw the players
 		kinect->drawSkeleton(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
@@ -93,14 +93,14 @@ void Kinect440::drawSkeletonDebugScreen() {
 						<< kinect->skeletonPoints[updateActivePlayer()][j].x << "     "
 						<< kinect->skeletonPoints[updateActivePlayer()][j].y << "     "
 						<< kinect->skeletonPoints[updateActivePlayer()][j].z << "     \n";
-			
+
 					ofSetColor(255,0,0);
 					ofCircle(getRawJoint(FIRST_ACTIVE,j),10);
 					ofSetColor(0,255,130);
 					ofCircle(getMappedJoint(FIRST_ACTIVE,j),10);
 					ofSetColor(1,0,130);
 					ofCircle(getSkeletonJoint(FIRST_ACTIVE,j),10);
-			
+
 
 		}
 		ofSetColor(0,0,0);
@@ -110,7 +110,7 @@ void Kinect440::drawSkeletonDebugScreen() {
 	}
 
 
-	
+
 
 
 
@@ -119,7 +119,7 @@ void Kinect440::drawSkeletonDebugScreen() {
 
 
 void   Kinect440::drawDefaultDebugScreen() {
-	
+
 	if(!NO_KINECT_DEBUG) {
 		// Draw video only
 		if(bDrawVideo){
@@ -133,7 +133,7 @@ void   Kinect440::drawDefaultDebugScreen() {
 			kinect->drawDepth(0, 0, 1024, 768);
 			// draw players' label images on video images
 			kinect->drawLabel(0, 0, 1024, 768);
-		
+
 		// Draw skeleton only
 		}else if(bDrawSkeleton){
 			kinect->drawSkeleton(0, 0, 1024, 768);	// draw skeleton images on video images
@@ -147,7 +147,7 @@ void   Kinect440::drawDefaultDebugScreen() {
 				kinect->drawDepth(450, 20, 400, 300);
 				// draw players' label images on video images
 				kinect->drawLabel(450, 20, 400, 300);
-		
+
 				// draw skeleton images on video images
 				kinect->drawSkeleton(20, 20, 400, 300);
 
@@ -157,7 +157,7 @@ void   Kinect440::drawDefaultDebugScreen() {
 				kinectPlayer.drawDepth(20, 340, 400, 300);
 				kinectPlayer.drawLabel(20, 340, 400, 300);
 
-		
+
 				kinectPlayer.drawSkeleton(20, 20, 400, 300);
 			}
 		}
@@ -285,11 +285,11 @@ ofPoint Kinect440::getSkeletonJoint(int player,int joint){
 
 		//Sanity Check
 		if(player > ofxKinectNui::SKELETON_COUNT || joint > ofxKinectNui::SKELETON_POSITION_COUNT || player < 0 || joint < 0 ) {
-	
+
 			printf("440 [WARNING] getSkeletonPoint: Attempting to get a player or index greater than the possible maximum or less than zero. Player = %i; joint = %i ; Returning (0,0)\n",player,joint);
 
 			return ofPoint(0,0);
-	
+
 		}else {
 
 			return skeletonLerpModel[player][joint];
@@ -305,11 +305,11 @@ ofPoint Kinect440::getMappedJoint(int player,int joint){
 
 		//Sanity Check
 		if(player > ofxKinectNui::SKELETON_COUNT || joint > ofxKinectNui::SKELETON_POSITION_COUNT || player < 0 || joint < 0 ) {
-	
+
 			printf("440 [WARNING] getMappedRawPoint: Attempting to get a player or index greater than the possible maximum or less than zero. Player = %i; joint = %i ; Returning (0,0)\n",player,joint);
 
 			return ofPoint(0,0);
-	
+
 		}else {
 
 			ofPoint p;
@@ -331,11 +331,11 @@ ofPoint Kinect440::getRawJoint(int player,int joint){
 
 		//Sanity Check
 		if(player > ofxKinectNui::SKELETON_COUNT || joint > ofxKinectNui::SKELETON_POSITION_COUNT || player < 0 || joint < 0 ) {
-	
+
 			printf("440 [WARNING] getMappedRawPoint: Attempting to get a player or index greater than the possible maximum or less than zero. Player = %i; joint = %i ; Returning (0,0)\n",player,joint);
 
 			return ofPoint(0,0);
-	
+
 		}else {
 
 
@@ -355,7 +355,7 @@ int Kinect440::updateActivePlayer() {
 		for(int i = 0; i < ofxKinectNui::SKELETON_COUNT; i++) {
 
 			if(kinect->skeletonPoints[i][0].z > 0){
-			
+
 				return i;
 
 			}
@@ -368,10 +368,10 @@ int Kinect440::updateActivePlayer() {
 
 bool Kinect440::isPlayerActive() {
 
-	if(!updateActivePlayer == 0) {
+	if(updateActivePlayer() != 0) {
 		return true;
 	}else{
 		return false;
-		
+
 	}
 }

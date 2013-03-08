@@ -36,9 +36,18 @@ void Fireflies::init(Audio440& aud,Kinect440& kin, ColorTheme& the){
 	prevBandAverage = 0;
 
 	for (int i = 0;i < nBandsToGet; i++){
-		pEllipse pe = pEllipse(audio->getBin(i), *cTheme);
+		pEllipse pe = pEllipse(audio->getBin(i), *cTheme, *kinect);
 		myParts.push_back(pe);
 	}
+
+	rangeX = 500;
+	rangeY = 500;
+
+	pointLeftHand = ofPoint(ofGetWidth()/2 - 100, ofGetHeight()/2);
+	pointRightHand = ofPoint(ofGetWidth()/2 + 100, ofGetHeight()/2);
+	pointHead = ofPoint(ofGetWidth()/2, ofGetHeight()/2);
+
+	kinectHandSize = 100;
 }
 	
 void Fireflies::queueIntro(){
@@ -56,11 +65,20 @@ void Fireflies::draw(){
 
 			ofBackground(0);
 
+			if(kinect->updateActivePlayer() != 0){
+				pointHead = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE, NUI_SKELETON_POSITION_HEAD);
+			}
+
+			rangeX = ofMap(pointHead.x, 0, ofGetWidth(), -40, 40);
+			rangeY = ofMap(pointHead.y, 0, ofGetHeight(), 20, -40);
+
 			ofPushMatrix();
 				//ofTranslate(0,sin(age/2)*100);
 				ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
-				ofRotateX(sin(age/2)*5);
-				ofRotateY(cos(age/2)*5);
+				ofRotateX(rangeY);
+				ofRotateY(rangeX);
+				//ofRotateX(sin(age/2)*5);
+				//ofRotateY(cos(age/2)*5);
 				ofRotateZ(-sin(age/2)*5);
 				ofTranslate(-ofGetWidth()/2, -ofGetHeight()/2);
 					
@@ -68,7 +86,7 @@ void Fireflies::draw(){
 			ofColor rectColor = ofColor(cTheme->color1.getHue(), cTheme->color1.getSaturation(), cTheme->color1.getBrightness(), audio->getAmp()*10);
 			ofSetColor(rectColor);
 			ofFill();
-			ofRect(-ofGetWidth()/2, -ofGetHeight()/2, 0, ofGetWidth()*2, ofGetHeight()*2);
+			ofRect(-ofGetWidth()*2, -ofGetHeight()*2, 0, ofGetWidth()*4, ofGetHeight()*4);
 
 			ofPopStyle();
 
@@ -91,8 +109,27 @@ void Fireflies::draw(){
 					}
 				}
 
-				myParts[i].update();
+				myParts[i].update(audio->getAvgBin(i%10)*intro);
 				myParts[i].draw(audio->getAvgBin(i%10)*intro);
+
+				//debug
+				if(kinect->updateActivePlayer() != 0){
+					pointLeftHand = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE, NUI_SKELETON_POSITION_HAND_LEFT);
+					pointRightHand = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE, NUI_SKELETON_POSITION_HAND_RIGHT);	
+				}
+
+				kinectHandSize = abs(ofDist(pointLeftHand.x, pointLeftHand.y, pointRightHand.x, pointRightHand.y));
+				if(kinectHandSize < 100 && pointRightHand.x != 0){
+					for(int j = 0; j < myParts.size(); j++){
+						myParts[j].implode(0.5);
+					}
+				}
+
+				ofSetColor(cTheme->color3);
+				ofFill();
+				ofEllipse(pointLeftHand, 30, 30);
+				ofEllipse(pointRightHand, 30, 30);
+
 			}
 
 				ofPushMatrix();
@@ -100,11 +137,16 @@ void Fireflies::draw(){
 						glEnable(GL_BLEND);
 						glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 						ofSetColor(audio->getAmp()*35,audio->getAmp()*35,audio->getAmp()*35,(audio->getAmp()*35)*intro);
-						//flash.draw(sin(age/100)*ofGetWidth()/4  + ofGetWidth()/2 - flash.width/2,cos(age/100)*ofGetHeight()/4 + ofGetHeight()/2 - flash.height/2,flash.height,flash.width);
-						//flash.draw(-sin(age/100)*ofGetWidth()/4  + ofGetWidth()/2 - flash.width/2,cos(age/100)*ofGetHeight()/4 + ofGetHeight()/2 - flash.height/2,flash.height,flash.width);
-						//flash.draw(sin(age/100)*ofGetWidth()/4  + ofGetWidth()/2 - flash.width/2,-cos(age/100)*ofGetHeight()/4 + ofGetHeight()/2 - flash.height/2,flash.height,flash.width);
-						//flash.draw(-sin(age/100)*ofGetWidth()/4  + ofGetWidth()/2 - flash.width/2,-cos(age/100)*ofGetHeight()/4 + ofGetHeight()/2 - flash.height/2,flash.height,flash.width);
 						flash.draw(ofGetWidth()/2 - flash.width/2, ofGetHeight()/2 - flash.height/2, flash.height, flash.width);
+
+						if(kinect->updateActivePlayer() != 0){
+							pointLeftHand = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE, NUI_SKELETON_POSITION_HAND_LEFT);
+							pointRightHand = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE, NUI_SKELETON_POSITION_HAND_RIGHT);
+						}
+
+						flash.draw(pointLeftHand.x - (flash.width/12), pointLeftHand.y - (flash.height/12), flash.height/6, flash.width/6);
+						flash.draw(pointRightHand.x - (flash.width/12), pointRightHand.y - (flash.height/12), flash.height/6, flash.width/6);
+
 						glDisable(GL_BLEND);
 			
 					ofPopStyle();
@@ -130,9 +172,8 @@ void Fireflies::draw(){
 		bulge.begin();
 			bulge.setUniform1f("width", ofGetWidth()/2 + sin(age/10)*200);
 			bulge.setUniform1f("height", ofGetHeight()/2 + cos(age/10)*200);
-			bulge.setUniform1f("radius", (ofMap(audio->getAvgBin(5),0,10,0.8,-0.3))*intro);
+			bulge.setUniform1f("radius", (ofMap(audio->getAvgBin(5),0,10,0.2,-0.2))*intro);
 			
-
 			fbo.draw(0,0,ofGetWidth(),ofGetHeight());
 			abrFbo.draw(0,0);
 		bulge.end();
