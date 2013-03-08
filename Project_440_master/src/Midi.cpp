@@ -1,11 +1,12 @@
 #include "Midi.h"
 
+
 void Midi::init(Kinect440 &KinectReference) {
 
 	bDebugMode = false;
 
 	kinect = &KinectReference;
-
+	listener = MidiListener();
 	//TODO Parse and read config settings
 
 	// print the available output ports to the console
@@ -14,8 +15,8 @@ void Midi::init(Kinect440 &KinectReference) {
 	cycler = 0; //for debugging
 
 	// connect
-	midiOut.openPort(1);	// by number
-	
+	midiOut.openPort(3);	// by number
+	midiIn.openPort(2);
 
 	channel = 1;
 	currentPgm = 0;
@@ -27,7 +28,7 @@ void Midi::init(Kinect440 &KinectReference) {
 	
 	}
 	setControllerValue(0,controllers[0]);
-
+	midiIn.addListener(&listener);
 
 }
 
@@ -94,4 +95,12 @@ void Midi::update() {
 	setControllerValue(10,ofMap(kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HEAD).x,0,640,0,127,true));
 	setControllerValue(11,ofMap(kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HAND_LEFT).y,0,480,0,127,true));
 	setControllerValue(12,ofMap(kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HAND_RIGHT).y,0,480,0,127,true));
+}
+
+
+void MidiListener::newMidiMessage(ofxMidiMessage & msg) {
+
+	ticks ++;
+	printf("Tick added... %i :: %i \n", ticks, msg.status);
+
 }

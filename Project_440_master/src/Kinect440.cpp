@@ -365,3 +365,52 @@ int Kinect440::updateActivePlayer() {
 		return 0;
 	}
 }
+
+
+
+vector <ofPoint> Kinect440::getContour() {
+
+	printf("Getting grayscale...");
+	ofxCvGrayscaleImage gsc;
+
+	printf("Getting finder...");
+	ofxCvContourFinder cfinder;
+
+	ofPixels pixels = kinect->getLabelPixelsCv(0);
+	pixels.resize(80,60);
+	printf("allocating...");
+	gsc.allocate(80, 60);
+
+	printf("setting grayscale...");
+	gsc.setFromPixels(pixels);
+
+	ofPushStyle();
+	ofSetColor(255, 255, 255, 255);
+	ofPopStyle();
+
+	printf("find contours...");
+	cfinder.findContours(gsc,10,(80*60)/4,1,false);
+
+	
+
+
+
+	if(!cfinder.blobs.empty() && cfinder.blobs.at(0).pts.size() > 0 ) {
+
+		ofPolyline polyline;
+		polyline.addVertices(cfinder.blobs.at(0).pts);
+		polyline.simplify();
+
+		if ( polyline.getVertices().size() < 3)  {
+			vector <ofPoint> p;
+			return p;
+		}
+	
+		return polyline.getVertices();
+	}else{
+		vector <ofPoint> p;
+		return p;
+	}
+
+
+}

@@ -3,6 +3,20 @@
 #include "ofMain.h"
 #include "ofxMidi.h"
 
+class MidiListener : public ofxMidiListener{
+
+public:
+	MidiListener() : ticks(0) {};
+
+	~MidiListener() {}
+	
+	void newMidiMessage(ofxMidiMessage& msg);
+
+
+	int ticks;
+
+};
+
 
 class Midi {
 
@@ -35,11 +49,14 @@ private:
 	bool bDebugMode;
 
 	ofxMidiOut midiOut;
+	ofxMidiIn midiIn;
 	int channel;
 	
 	unsigned int currentPgm;
 	int note, velocity;
 	int controllers[64];
 	int cycler;
+
+	MidiListener listener;
 
 };

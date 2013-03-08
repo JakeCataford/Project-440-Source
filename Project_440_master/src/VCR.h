@@ -4,6 +4,7 @@
 #include "Audio440.h"
 #include "Scanlines.h"
 #include "IVisualiserBase.h"
+#include "Wireframe.h"
 
 
 class VCRParticle{
@@ -73,5 +74,7 @@ private:
 	ofPoint sph;
 	bool isOutro;
 	bool isCleanup;
+
+	Wireframe wireframe;
 	
 };

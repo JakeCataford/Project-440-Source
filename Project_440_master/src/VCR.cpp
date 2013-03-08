@@ -17,6 +17,7 @@ void VCR::init(Audio440& aud,Kinect440& kin, ColorTheme& the){
 	intro = 0.0f;
 	lastAmp = 0;
 	isOutro = false;
+	wireframe.init(kin,aud);
 }
 	
 void VCR::queueIntro(){
@@ -144,7 +145,8 @@ void VCR::draw(){
 	
 			ofPopMatrix();
 
-	
+			wireframe.draw();
+			//kinect->kinect->drawLabel();
 
 			lastAmp = audio->getAmp();
 

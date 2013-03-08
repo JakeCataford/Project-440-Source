@@ -5,6 +5,8 @@
 //#include "ofMain.h"
 #include "ofxKinectNuiPlayer.h"
 #include "ofxKinectNuiRecorder.h"
+#include "Kinect440.h"
+#include "ofxOpenCv.h"
 
 
 using namespace std;
@@ -37,6 +39,9 @@ public:
 	void stopRecording();
 	void startPlayback();
 	void stopPlayback();
+
+	vector <ofPoint> getContour(); 
+
 
 	//hooks, for skeleton use enums ie NUI_SKELETON_POSITION_HIP_CENTER in place of joint
 	ofPoint getSkeletonJoint(int,int); //Lerped Skeleton Point
@@ -73,6 +78,8 @@ public:
 	int mRotationX, mRotationY;
 
 	ofPoint skeletonLerpModel[ofxKinectNui::SKELETON_COUNT][ofxKinectNui::SKELETON_POSITION_COUNT];
+
+	
 
 	ofxKinectNuiDrawTexture*	videoDraw_;
 	ofxKinectNuiDrawTexture*	depthDraw_;

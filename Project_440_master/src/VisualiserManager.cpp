@@ -22,6 +22,17 @@ void VisualiserManager::init(Audio440& audio,Kinect440& kinect) {
 	current = 0;
 	previous = visualiserPtrs.size() - 1;
 
+	for(int i = 0; i < visualiserPtrs.size(); i++){
+
+		visualiserPtrs[i]->queueIntro();
+		visualiserPtrs[i]->update();
+		visualiserPtrs[i]->draw();
+		visualiserPtrs[i]->queueOutro();
+
+	}
+
+	visualiserPtrs[0]->queueIntro();
+
 }
 
 void VisualiserManager::cycle() {
