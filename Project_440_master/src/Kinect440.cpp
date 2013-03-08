@@ -365,3 +365,13 @@ int Kinect440::updateActivePlayer() {
 		return 0;
 	}
 }
+
+bool Kinect440::isPlayerActive() {
+
+	if(!updateActivePlayer == 0) {
+		return true;
+	}else{
+		return false;
+		
+	}
+}

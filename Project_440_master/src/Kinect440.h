@@ -46,6 +46,8 @@ public:
 	
 
 	int updateActivePlayer();
+	bool isPlayerActive();
+
 
 	ofxKinectNui* kinect;
 

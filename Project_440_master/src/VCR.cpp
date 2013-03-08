@@ -1,4 +1,5 @@
 #include "VCR.h"
+#include <math.h>
 
 void VCR::init(Audio440& aud,Kinect440& kin, ColorTheme& the){
 	kinect = &kin;
@@ -30,6 +31,7 @@ void VCR::draw(){
 	if(!isCleanup) {
 		fbo.begin();
 			ofPushMatrix();
+				
 				ofRotateY(sin((double)age/200)*5);
 				//ofClear(0);
 				ofBackground(0,0,0, intro*255);
@@ -55,6 +57,20 @@ void VCR::draw(){
 					}
 				}
 
+				/*sdffdasfsdafsadfasdfsda
+				ofPoint rHand = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HAND_RIGHT);
+
+				ofCircle(rHand.x, rHand.y, 50);
+
+				for(int i = 0; i < particles.size(); i++)
+				{
+					if(particles[i].position.x == rHand.x){
+						particles.erase(particles.begin());
+					}
+				}
+
+				//asdfsdafasdfdasfasdfasdfasd*/
+
 				ofPushStyle();
 					for(int i = 0; i < 10; i++) {
 						ofSetColor(255,255,255,10 * intro);
@@ -70,7 +86,26 @@ void VCR::draw(){
 						ofSetColor(theme->color1.r,theme->color1.g,theme->color1.b);
 	
 							ofTranslate(ofGetWidth()/2,ofGetHeight()/2);
-							ofRotateZ(sin((age-20)/50)*90  +45);
+
+							ofPoint head = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HEAD);
+							ofPoint hip = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HIP_CENTER);
+
+							float x = head.x - hip.x;
+							float y = head.y - hip.y;
+
+							float result = atan2 (y,x) * 180 / PI;
+							
+							ofRotateZ(result*2);
+
+							//atan2 to find rad
+
+							//rad to degrees
+
+							//ofRotateZ(degrees * factor);
+
+
+
+							//ofRotateZ(sin((age-20)/50)*90  +45); //This is the rotation do atan2() of head and hip, the convert to degrees and assign
 							ofRotateY(sin((age - 10)/10)*30);
 							for(int i = 0; i< 3; i++) {
 								for(int j = 0; j < 3; j++) {
@@ -84,7 +119,8 @@ void VCR::draw(){
 					ofPushStyle();
 						ofSetColor(theme->color1.r,theme->color1.g,theme->color1.b);
 							ofTranslate(ofGetWidth()/2,ofGetHeight()/2);
-							ofRotateZ(sin((age-10)/50)*90  +45);
+							ofRotateZ(result);
+							//ofRotateZ(sin((age-10)/50)*90  +45);
 							ofRotateY(sin((age - 5)/10)*30);
 							for(int i = 0; i< 3; i++) {
 								for(int j = 0; j < 3; j++) {
@@ -99,7 +135,8 @@ void VCR::draw(){
 						ofSetColor(theme->color3.r,theme->color3.g,theme->color3.b);
 	
 							ofTranslate(ofGetWidth()/2,ofGetHeight()/2);
-							ofRotateZ(sin(age/50)*90 +45);
+							ofRotateZ(result);      
+							//ofRotateZ(sin(age/50)*90 +45);
 							ofRotateY(sin((age)/10)*30);
 		
 							for(int i = 0; i< 3; i++) {
