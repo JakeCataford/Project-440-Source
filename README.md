@@ -17,3 +17,6 @@ It has some dependencies.
 - It relies also on ofxXMLSettings, ofxOpenCV, ofxSVG, and ofxOsc, but those should come with the of download.
 
 
+The Dev Branch is for new developments that will be implemented into master after the new features are tested.
+
+
