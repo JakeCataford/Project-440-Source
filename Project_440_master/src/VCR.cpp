@@ -18,6 +18,9 @@ void VCR::init(Audio440& aud,Kinect440& kin, ColorTheme& the){
 	intro = 0.0f;
 	lastAmp = 0;
 	isOutro = false;
+
+	pointLeftHand = ofPoint(ofGetWidth()/2 - 100, ofGetHeight()/2);
+	pointRightHand = ofPoint(ofGetWidth()/2 + 100, ofGetHeight()/2);
 }
 
 void VCR::queueIntro(){
@@ -57,20 +60,6 @@ void VCR::draw(){
 					}
 				}
 
-				/*sdffdasfsdafsadfasdfsda
-				ofPoint rHand = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HAND_RIGHT);
-
-				ofCircle(rHand.x, rHand.y, 50);
-
-				for(int i = 0; i < particles.size(); i++)
-				{
-					if(particles[i].position.x == rHand.x){
-						particles.erase(particles.begin());
-					}
-				}
-
-				//asdfsdafasdfdasfasdfasdfasd*/
-
 				ofPushStyle();
 					for(int i = 0; i < 10; i++) {
 						ofSetColor(255,255,255,10 * intro);
@@ -83,29 +72,22 @@ void VCR::draw(){
 
 				ofPushMatrix();
 					ofPushStyle();
-						ofSetColor(theme->color1.r,theme->color1.g,theme->color1.b);
-
+						ofSetColor(theme->color4);
 							ofTranslate(ofGetWidth()/2,ofGetHeight()/2);
 
-							ofPoint head = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HEAD);
-							ofPoint hip = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HIP_CENTER);
+							if(kinect->updateActivePlayer() != 0){
+								head = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HEAD);
+								hip = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HIP_CENTER);
+								pointLeftHand = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE, NUI_SKELETON_POSITION_HAND_LEFT);
+								pointRightHand = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE, NUI_SKELETON_POSITION_HAND_RIGHT);	
+							}
 
 							float x = head.x - hip.x;
 							float y = head.y - hip.y;
 
 							float result = atan2 (y,x) * 180 / PI;
 
-							ofRotateZ(result*2);
-
-							//atan2 to find rad
-
-							//rad to degrees
-
-							//ofRotateZ(degrees * factor);
-
-
-
-							//ofRotateZ(sin((age-20)/50)*90  +45); //This is the rotation do atan2() of head and hip, the convert to degrees and assign
+							ofRotateZ(result*1.2);
 							ofRotateY(sin((age - 10)/10)*30);
 							for(int i = 0; i< 3; i++) {
 								for(int j = 0; j < 3; j++) {
@@ -117,9 +99,9 @@ void VCR::draw(){
 
 				ofPushMatrix();
 					ofPushStyle();
-						ofSetColor(theme->color1.r,theme->color1.g,theme->color1.b);
+						ofSetColor(theme->color1);
 							ofTranslate(ofGetWidth()/2,ofGetHeight()/2);
-							ofRotateZ(result);
+							ofRotateZ(result*1.5);
 							//ofRotateZ(sin((age-10)/50)*90  +45);
 							ofRotateY(sin((age - 5)/10)*30);
 							for(int i = 0; i< 3; i++) {
@@ -132,10 +114,9 @@ void VCR::draw(){
 
 				ofPushMatrix();
 					ofPushStyle();
-						ofSetColor(theme->color3.r,theme->color3.g,theme->color3.b);
-
+						ofSetColor(theme->color3);
 							ofTranslate(ofGetWidth()/2,ofGetHeight()/2);
-							ofRotateZ(result);      
+							ofRotateZ(result*1.8);      
 							//ofRotateZ(sin(age/50)*90 +45);
 							ofRotateY(sin((age)/10)*30);
 
@@ -150,7 +131,7 @@ void VCR::draw(){
 
 				ofPushMatrix();
 					ofPushStyle();
-						ofTranslate(ofGetWidth()/4,ofGetHeight()/2);
+						ofTranslate(pointLeftHand.x,pointLeftHand.y);
 						ofRotate(age/2);
 						ofSetColor(255,255,255);
 						ofRect(0,0,0,(audio->getAmp()*10)*intro,(audio->getAmp()*10)*intro);
@@ -160,7 +141,8 @@ void VCR::draw(){
 
 				ofPushMatrix();
 					ofPushStyle();
-						ofTranslate((ofGetWidth()/4)*3,ofGetHeight()/2);
+						//ofTranslate((ofGetWidth()/4)*3,ofGetHeight()/2);
+						ofTranslate(pointRightHand.x,pointRightHand.y);	
 						ofRotate(age/2);
 						ofSetColor(255,255,255);
 						ofRect(0,0,0,audio->getAvgBin(4)*10,(audio->getAmp()*10)*intro);

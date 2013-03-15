@@ -3,19 +3,22 @@
 void Midi::init(Kinect440 &KinectReference) {
 
 	bDebugMode = false;
-
+	
 	kinect = &KinectReference;
 
 	//TODO Parse and read config settings
 
 	// print the available output ports to the console
 	ofxMidiOut::listPorts(); // via static too
-	
+	ofxMidiIn::listPorts();
 	cycler = 0; //for debugging
 
 	// connect
 	midiOut.openPort(1);	// by number
 	
+	midiIn.openPort(1);
+
+	midiIn.addListener(this);
 
 	channel = 1;
 	currentPgm = 0;
@@ -33,6 +36,10 @@ void Midi::init(Kinect440 &KinectReference) {
 
 Midi::~Midi() {
 
+}
+
+void Midi::setVManager(VisualiserManager & visualiserManager){
+	visualisers = & visualiserManager;
 }
 
 void Midi::setControllerValue(int controller,float value) {
@@ -91,7 +98,22 @@ void Midi::drawDebugScreen(bool scannerTest) {
 }
 
 void Midi::update() {
-	setControllerValue(10,ofMap(kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HEAD).x,0,640,0,127,true));
-	setControllerValue(11,ofMap(kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HAND_LEFT).y,0,480,0,127,true));
-	setControllerValue(12,ofMap(kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HAND_RIGHT).y,0,480,0,127,true));
+	setControllerValue(50,ofMap(kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HEAD).x,ofGetWidth()*0.25,ofGetWidth()*0.75,5,120,true));
+	setControllerValue(51,ofMap(kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HEAD).y,0,ofGetHeight(),5,120,true));
+	setControllerValue(52,ofMap(kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HIP_CENTER).x,ofGetWidth()*0.25,ofGetWidth()*0.75,5,120,true));
+	setControllerValue(53,ofMap(kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HIP_CENTER).y,0,ofGetHeight(),5,120,true));
+	setControllerValue(54,ofMap(kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HAND_LEFT).x,ofGetWidth()*0.25,ofGetWidth()*0.75,5,120,true));
+	setControllerValue(55,ofMap(kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HAND_LEFT).y,0,ofGetHeight(),5,120,true));
+	setControllerValue(56,ofMap(kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HAND_RIGHT).x,ofGetWidth()*0.25,ofGetWidth()*0.75,5,120,true));
+	setControllerValue(57,ofMap(kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE,NUI_SKELETON_POSITION_HAND_RIGHT).y,0,ofGetHeight(),5,120,true));
+}
+
+void Midi::newMidiMessage(ofxMidiMessage& msg) {
+
+	//if message is a note on channel? 
+	//visualisers->cycle();
+	if(msg.status == 128) { 
+		visualisers->cycle();
+	}
+
 }

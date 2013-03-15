@@ -6,13 +6,15 @@
 #include "VCR.h"
 #include "Tunnel.h"
 #include "Idle.h"
-#include "Midi.h"
 #include "Fireflies.h"
 
 class VisualiserManager {
 
 public:
-	VisualiserManager(){};
+	VisualiserManager() :
+	isReset(true),
+	playerTimeout(0)
+	{};
 	~VisualiserManager(){};
 
 
@@ -20,12 +22,14 @@ public:
 	void cycle();
 	void draw();
 	void update();
+	void reset();
 	vector <VisualiserBase*> visualiserPtrs;
+
+	VisualiserBase * intro;
 
 	//references
 	Audio440* aud;
 	Kinect440 * kin;
-	Midi * midi;
 
 	ColorTheme theme;
 	//Visualisers
@@ -33,6 +37,10 @@ public:
 	Tunnel tunnel;
 	Idle idle;
 	Fireflies flies;
+
+	int playerTimeout;
+
+	bool isReset;
 
 	int current;
 	int previous;

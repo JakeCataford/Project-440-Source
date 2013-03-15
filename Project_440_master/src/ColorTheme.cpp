@@ -37,7 +37,7 @@ void ColorTheme::newTheme()
 
 	color3 = ofColor::fromHsb(complement,color1.getSaturation(),color1.getBrightness());	
 
-	color4 = ofColor::fromHsb(color1.getHue(),color1.getSaturation(),color1.getBrightness());
+	color4 = ofColor::fromHsb(color1.getHue(),color1.getSaturation(),color1.getBrightness()*0.8);
 }
 
 //----------------------------------------------------------------------------------

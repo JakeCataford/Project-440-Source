@@ -73,5 +73,6 @@ private:
 	ofPoint sph;
 	bool isOutro;
 	bool isCleanup;
+	ofPoint head, hip, pointLeftHand, pointRightHand;
 	
 };

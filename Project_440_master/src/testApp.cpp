@@ -14,7 +14,7 @@ void testApp::setup() {
 
 	kinect = Kinect440();
 	midi = Midi();
-	midi.init(kinect);
+	
 	audio.init();
 	ofSoundStreamListDevices();
 	ofSoundStreamSetup(0,2,this,48000,512,4);	
@@ -34,6 +34,8 @@ void testApp::setup() {
 
 	vmanager = VisualiserManager();
 	vmanager.init(audio,kinect);
+	midi.init(kinect);
+	midi.setVManager(vmanager);
 	ofEnableAlphaBlending();
 
 }

@@ -1,8 +1,7 @@
 #include "VisualiserManager.h"
 
 void VisualiserManager::init(Audio440& audio,Kinect440& kinect) {
-	
-	
+
 	aud = &audio;
 	kin = &kinect;
 	theme = ColorTheme();
@@ -15,7 +14,7 @@ void VisualiserManager::init(Audio440& audio,Kinect440& kinect) {
 	vcr.init(audio,kinect,theme);
 	tunnel.init(audio,kinect,theme);
 	flies.init(audio,kinect,theme);
-	visualiserPtrs.push_back(&idle);
+	intro = &idle;
 	visualiserPtrs.push_back(&tunnel);
 	visualiserPtrs.push_back(&vcr);
 	visualiserPtrs.push_back(&flies);
@@ -32,9 +31,20 @@ void VisualiserManager::init(Audio440& audio,Kinect440& kinect) {
 
 }
 
+void VisualiserManager::reset() {
+
+	isReset = true;
+
+}
+
 void VisualiserManager::cycle() {
 
+	if(isReset) {
+		isReset = false;
+	}
 
+	theme.newTheme();
+	
 	current++;
 	if(current >= visualiserPtrs.size()){
 		current = 0;
@@ -57,14 +67,28 @@ void VisualiserManager::cycle() {
 
 void VisualiserManager::draw() {
 
-	
+	if(isReset) {
+
+		intro->draw();
+
+	}else{
 
 	if(!visualiserPtrs[previous]->getCleanupState()){
 		visualiserPtrs[previous]->draw();
 	}
 
 	visualiserPtrs[current]->draw();
+	}
 
+	if(!kin->isPlayerActive()) {
+		playerTimeout--;
+	}else{
+		if(isReset) {
+			//play
+			
+		}
+		playerTimeout = 300;
+	}
 
 }
 

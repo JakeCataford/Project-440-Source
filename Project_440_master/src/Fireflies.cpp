@@ -92,8 +92,15 @@ void Fireflies::draw(){
 
 			ofPushStyle();
 
+			
+
 			for (int i = 0; i < myParts.size(); i++)
 			{   
+				if(kinect->updateActivePlayer() != 0){
+					pointLeftHand = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE, NUI_SKELETON_POSITION_HAND_LEFT);
+					pointRightHand = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE, NUI_SKELETON_POSITION_HAND_RIGHT);	
+				}
+
 				float avDiff = fabs(audio->getAmp() - prevBandAverage);
 
 				if(avDiff > 0.5){
@@ -111,12 +118,6 @@ void Fireflies::draw(){
 
 				myParts[i].update(audio->getAvgBin(i%10)*intro);
 				myParts[i].draw(audio->getAvgBin(i%10)*intro);
-
-				//debug
-				if(kinect->updateActivePlayer() != 0){
-					pointLeftHand = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE, NUI_SKELETON_POSITION_HAND_LEFT);
-					pointRightHand = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE, NUI_SKELETON_POSITION_HAND_RIGHT);	
-				}
 
 				kinectHandSize = abs(ofDist(pointLeftHand.x, pointLeftHand.y, pointRightHand.x, pointRightHand.y));
 				if(kinectHandSize < 100 && pointRightHand.x != 0){

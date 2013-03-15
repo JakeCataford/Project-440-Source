@@ -84,7 +84,7 @@ public:
 
 		ofColor color1 = ofColor::fromHsb(h1, s1, b1, 200);
 
-		ofSetColor(color1);
+		ofSetColor(color1, pSize*20);
 		ofFill();
 
 		if (pSize*inflation > prevW*1.5) {

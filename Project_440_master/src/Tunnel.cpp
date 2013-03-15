@@ -71,7 +71,7 @@ void Tunnel::draw(){
 		}
 
 		rangeX = ofMap(pointHead.x, 0, ofGetWidth(), 15, -15);
-		rangeY = ofMap(pointHead.y, 0, ofGetHeight(), -10, 20);
+		rangeY = ofMap(pointHead.y, 0, ofGetHeight(), -10, 15);
 
 		kinectHandSize = abs(ofDist(pointLeftHand.x, pointLeftHand.y, pointRightHand.x, pointRightHand.y));
 		
