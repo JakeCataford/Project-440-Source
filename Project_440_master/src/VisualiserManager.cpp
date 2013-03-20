@@ -10,14 +10,17 @@ void VisualiserManager::init(Audio440& audio,Kinect440& kinect) {
 	tunnel = Tunnel();
 	flies = Fireflies();
 	idle = Idle();
+	heiro = Heiroglyphs();
 	idle.init(audio,kinect,theme);
 	vcr.init(audio,kinect,theme);
 	tunnel.init(audio,kinect,theme);
 	flies.init(audio,kinect,theme);
+	heiro.init(audio,kinect,theme);
 	intro = &idle;
 	visualiserPtrs.push_back(&tunnel);
 	visualiserPtrs.push_back(&vcr);
 	visualiserPtrs.push_back(&flies);
+	visualiserPtrs.push_back(&heiro);
 	current = 0;
 	previous = visualiserPtrs.size() - 1;
 
@@ -28,7 +31,7 @@ void VisualiserManager::init(Audio440& audio,Kinect440& kinect) {
 		visualiserPtrs[i]->queueOutro();
 	}
 	visualiserPtrs[0]->queueIntro();
-
+	del = Delauney440();
 }
 
 void VisualiserManager::reset() {
@@ -89,6 +92,9 @@ void VisualiserManager::draw() {
 		}
 		playerTimeout = 300;
 	}
+	ofPushStyle();
+	del.update(kin->getContourPoly(),aud->getAvgBin(7)*25);
+	ofPopStyle();
 
 }
 

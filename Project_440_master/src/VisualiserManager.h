@@ -6,7 +6,9 @@
 #include "VCR.h"
 #include "Tunnel.h"
 #include "Idle.h"
+#include "Heiroglyphs.h"
 #include "Fireflies.h"
+#include "Delauney.h"
 
 class VisualiserManager {
 
@@ -37,9 +39,9 @@ public:
 	Tunnel tunnel;
 	Idle idle;
 	Fireflies flies;
-
+	Heiroglyphs heiro;
 	int playerTimeout;
-
+	Delauney440 del;
 	bool isReset;
 
 	int current;

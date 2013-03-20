@@ -101,16 +101,16 @@ void Fireflies::draw(){
 					pointRightHand = kinect->getSkeletonJoint(Kinect440::FIRST_ACTIVE, NUI_SKELETON_POSITION_HAND_RIGHT);	
 				}
 
-				float avDiff = fabs(audio->getAmp() - prevBandAverage);
+				float avDiff = audio->getAvgBin(0) - prevBandAverage;
 
-				if(avDiff > 0.5){
+				if(avDiff > 0.3){
 					for(int j = 0; j < myParts.size(); j++){
 						myParts[j].explode(10);
 					}
 				}
 
 				
-				if(avDiff > 1){
+				if(avDiff > 0.7){
 					for(int j = 0; j < myParts.size(); j++){
 						myParts[j].implode(0.5);
 					}
@@ -179,7 +179,7 @@ void Fireflies::draw(){
 			abrFbo.draw(0,0);
 		bulge.end();
 
-		prevBandAverage = audio->getAmp();
+		prevBandAverage = audio->getAvgBin(0);
 	}
 
 

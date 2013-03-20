@@ -91,7 +91,7 @@ void Tunnel::draw(){
 		ofRotateX(age*20);
 		ofRotateY(age*10);
 		
-		//extra two cubes, can be taken out if necessary or you don't like it
+		/*extra two cubes, can be taken out if necessary or you don't like it
 		if(audio->getAmp() > 0.5){
 			ofPushMatrix();
 			ofTranslate(-200, -200, -200);
@@ -102,7 +102,7 @@ void Tunnel::draw(){
 			ofTranslate(200, 200, 200);
 			ofBox(audio->getAvgBin(0)*(ofGetHeight()/30)*((float)introCounter/200)   *kinectHandSize    /3);
 			ofPopMatrix();
-		}
+		}*/
 
 		ofBox(audio->getAvgBin(0)*(ofGetHeight()/30)*((float)introCounter/200)   *kinectHandSize);
 		ofPopMatrix();
@@ -139,6 +139,7 @@ void Tunnel::draw(){
 		//light.disable();
 		scan.draw();
 
+		/* To get rid of the weird lines, draw the scanlines after
 		ofPushStyle();
 
 			ofSetColor(theme->color3);
@@ -155,6 +156,7 @@ void Tunnel::draw(){
 			ofPopMatrix();
 
 		ofPopStyle();
+		I dont like the way it looks with the flat shading*/
 
 		light.disable();
 		ofDisableLighting();

@@ -82,7 +82,7 @@ public:
 			b1 = colorTheme->color3.getBrightness();
 		}
 
-		ofColor color1 = ofColor::fromHsb(h1, s1, b1, 200);
+		ofColor color1 = ofColor::fromHsb(h1, s1, b1, 255);
 
 		ofSetColor(color1, pSize*20);
 		ofFill();

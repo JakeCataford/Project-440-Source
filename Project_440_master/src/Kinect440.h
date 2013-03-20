@@ -1,7 +1,7 @@
 #pragma once
 #define NO_KINECT_DEBUG false
 #include "ofxKinectNui.h"
-
+#include "ofxOpenCv.h"
 //#include "ofMain.h"
 #include "ofxKinectNuiPlayer.h"
 #include "ofxKinectNuiRecorder.h"
@@ -47,7 +47,7 @@ public:
 
 	int updateActivePlayer();
 	bool isPlayerActive();
-
+	ofPolyline getContourPoly();
 
 	ofxKinectNui* kinect;
 

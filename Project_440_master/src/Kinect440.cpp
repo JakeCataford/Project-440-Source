@@ -375,3 +375,45 @@ bool Kinect440::isPlayerActive() {
 
 	}
 }
+
+ofPolyline Kinect440::getContourPoly() {
+
+
+	ofxCvGrayscaleImage gsc;
+
+	ofxCvContourFinder cfinder;
+
+	ofPixels pixels = kinect->getLabelPixelsCv(0);
+	pixels.resize(320,240);
+
+	gsc.allocate(320, 240);
+
+	gsc.setFromPixels(pixels);
+
+	ofPushStyle();
+	ofSetColor(255, 255, 255, 255);
+	ofPopStyle();
+
+	cfinder.findContours(gsc,10,(320*240)/3,1,false);
+
+	if(!cfinder.blobs.empty() && cfinder.blobs.at(0).pts.size() > 0 ) {
+
+		ofPolyline polyline;
+		for(int i = 0; i < cfinder.blobs.at(0).pts.size(); i ++) {
+			polyline.addVertex(ofPoint(ofMap(cfinder.blobs.at(0).pts.at(i).x,0,320,50,ofGetWidth()-50),ofMap(cfinder.blobs.at(0).pts.at(i).y,0,240,0,ofGetHeight())));
+			
+		}
+		polyline.simplify();
+		if ( polyline.getVertices().size() < 3)  {
+			vector <ofPoint> p;
+			return p;
+		}
+
+		return polyline;
+	}else{
+		
+		return ofPolyline();
+	}
+
+
+}

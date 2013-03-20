@@ -23,11 +23,11 @@ void ColorTheme::ctFadeOut()
 //----------------------------------------------------------------------------------
 void ColorTheme::newTheme()
 {
-	color1 = ofColor::fromHsb(ofRandom(0,255),ofRandom(20,255),ofRandom(100,255));
+	color1 = ofColor::fromHsb(ofRandom(0,255),ofRandom(200,255),ofRandom(200,255));
 
 	color2 = ofColor::fromHsb(color1.getHue()*0.9,color1.getSaturation()*0.4,color1.getBrightness());
 
-	float complement = color1.getHue() + ofRandom(-50, 50);
+	float complement = color1.getHue(); //removed variation
 
 	if(complement+127.5 > 255){
 		complement = (complement+127.5) - 255;
