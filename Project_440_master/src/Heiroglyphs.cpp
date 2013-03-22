@@ -54,7 +54,7 @@ void Heiroglyphs::draw(){
 				heiroNumber = floor(ofRandom(0,4));
 			}
 			ofPushStyle();
-			ofSetColor(255,255,255,ofMap(audio->getAvgBin(0),0,8,0,255));
+			ofSetColor(255,255,255,ofMap(audio->getAvgBin(0),0,5,0,255));
 			if(screenToggle) {
 				testScreenOne.draw(0,0,ofGetWidth(),ofGetHeight());
 			}else{

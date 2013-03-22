@@ -8,10 +8,10 @@
 
 class TunnelParticle{
 public:
-	TunnelParticle(float x,float y, float z, float sx, float sy, float sz) : age(1) {
+	TunnelParticle(float x,float y, float z, float sx, float sy, float sz, ofImage & sprite) : age(1) {
 		position = ofVec3f(x,y,z);
 		speed = ofVec3f(sx,sy,sz);
-	
+		circle = &sprite;
 	};
 	~TunnelParticle(){};
 
@@ -35,6 +35,7 @@ public:
 	float age;
 	ofPoint position;
 	ofVec3f speed;
+	ofImage * circle;
 };
 
 
@@ -72,7 +73,7 @@ private:
 	ofImage flash;
 	vector <TunnelParticle> parts;
 	ofLight light;
-
+	ofImage circle;
 	float rangeX, rangeY, kinectHandSize;
 	ofPoint pointLeftHand, pointRightHand, pointHead;
 };

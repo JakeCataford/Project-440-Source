@@ -15,7 +15,7 @@ void Tunnel::init(Audio440& aud,Kinect440& kin,ColorTheme& the){
 	prevamp = 0;
 	basic.load("shaders/default");
 	bulge.load("shaders/bulge");
-	
+	circle.loadImage("images/softy.png");
 	generate();
 	light.setup();
 	light.setPointLight();
@@ -113,7 +113,8 @@ void Tunnel::draw(){
 			generate();
 		}
 
-
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 		for(int i = 0; i < parts.size(); i++) {
 			if(parts[i].position.z > 4000) {
 				parts.erase(parts.begin() + i);
@@ -121,9 +122,10 @@ void Tunnel::draw(){
 			parts[i].update();
 			parts[i].draw(audio->getAvgBin(i%14));
 		}
+		glDisable(GL_BLEND);
 
 		while(parts.size() < 300) {
-			parts.push_back(TunnelParticle(ofRandom(-ofGetWidth()/2,ofGetWidth()/2),ofRandom(-ofGetHeight()/2,ofGetHeight()/2),ofRandom(-1000,-800),ofRandom(-1,1),ofRandom(-1,1),ofRandom(30,50)));
+			parts.push_back(TunnelParticle(ofRandom(-ofGetWidth()/2,ofGetWidth()/2),ofRandom(-ofGetHeight()/2,ofGetHeight()/2),ofRandom(-1000,-800),ofRandom(-1,1),ofRandom(-1,1),ofRandom(30,50),circle));
 
 		}
 

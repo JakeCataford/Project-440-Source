@@ -14,9 +14,9 @@ void Midi::init(Kinect440 &KinectReference) {
 	cycler = 0; //for debugging
 
 	// connect
-	midiOut.openPort(1);	// by number
+	midiOut.openPort(4);	// by number
 	
-	midiIn.openPort(1);
+	midiIn.openPort(4);
 
 	midiIn.addListener(this);
 

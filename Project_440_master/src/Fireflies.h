@@ -11,8 +11,9 @@ class pEllipse
 {
 public:
 	/********** CONSTRUCTOR **********/
-	pEllipse(float pSize, ColorTheme &curTheme, Kinect440& kin){
+	pEllipse(float pSize, ColorTheme &curTheme, Kinect440& kin, ofImage& sprite){
 		colorTheme = &curTheme;
+		circle = &sprite;
 		kinect = &kin;
 		px = rand() % ofGetWidth();
 		py = rand() % ofGetHeight();
@@ -31,7 +32,6 @@ public:
 	/********** UPDATE **********/
 	void update(float pSize){
 
-		float inflation = 10;
 
 		if (px < 0){ pxD *= -1; px = 0;}
 		else if (px > ofGetWidth() + 100){ pxD *= -1; px = ofGetWidth();}
@@ -73,29 +73,24 @@ public:
 		float h1, h2, s1, s2, b1, b2 = 0.0;
 
 		if(colorChoice<0.5){
-			h1 = colorTheme->color1.getHue();
-			s1 = colorTheme->color1.getSaturation();
-			b1 = colorTheme->color1.getBrightness();
+			ofSetColor(colorTheme->color1.r,colorTheme->color1.g,colorTheme->color1.b,200);
 		}else{
-			h1 = colorTheme->color3.getHue();
-			s1 = colorTheme->color3.getSaturation();
-			b1 = colorTheme->color3.getBrightness();
+			ofSetColor(colorTheme->color3.r,colorTheme->color3.g,colorTheme->color3.b,200);
 		}
 
-		ofColor color1 = ofColor::fromHsb(h1, s1, b1, 255);
+		
 
-		ofSetColor(color1, pSize*20);
-		ofFill();
-
+		
+		ofSetCircleResolution(100);
 		if (pSize*inflation > prevW*1.5) {
 			pSize *= inflation;
 			ofPoint tempPoint = ofPoint(px, py);
-			ofSphere(tempPoint,pSize);
+			circle->draw(tempPoint.x,tempPoint.y,pSize,pSize);
 			prevW = pSize;
 			prevH = pSize;
 		}else {
 			ofPoint tempPoint = ofPoint(px, py);
-			ofSphere(tempPoint, prevW*0.95);
+			circle->draw(tempPoint.x,tempPoint.y,prevW*0.95,prevW*0.95);
 			prevW = prevW*0.95;
 			prevH = prevH*0.95;
 		}
@@ -128,6 +123,7 @@ public:
 	float prevW, prevH;
 	ColorTheme * colorTheme;
 	float colorChoice;
+	ofImage * circle;
 	Kinect440 * kinect;
 };
 
@@ -166,7 +162,7 @@ private:
 	ofShader bulge;
 	Scanlines scan;
 	ofImage flash;
-
+	ofImage circle;
 	ofShader abr;
 	ofFbo abrFbo;
 

@@ -24,7 +24,9 @@ void Fireflies::init(Audio440& aud,Kinect440& kin, ColorTheme& the){
 	abrFbo.allocate(ofGetWidth(), ofGetHeight());
 
 	flash.loadImage("images/flashorb.png");
+	circle.loadImage("images/softy.png");
 	flash.resize(ofGetHeight(),ofGetHeight());
+	
 
 	sph = ofPoint(41,20);
 	intro = 0.0f;
@@ -36,7 +38,7 @@ void Fireflies::init(Audio440& aud,Kinect440& kin, ColorTheme& the){
 	prevBandAverage = 0;
 
 	for (int i = 0;i < nBandsToGet; i++){
-		pEllipse pe = pEllipse(audio->getBin(i), *cTheme, *kinect);
+		pEllipse pe = pEllipse(audio->getBin(i), *cTheme, *kinect, circle);
 		myParts.push_back(pe);
 	}
 
@@ -115,9 +117,16 @@ void Fireflies::draw(){
 						myParts[j].implode(0.5);
 					}
 				}
-
-				myParts[i].update(audio->getAvgBin(i%10)*intro);
-				myParts[i].draw(audio->getAvgBin(i%10)*intro);
+				ofPushMatrix();
+					ofPushStyle();
+						glEnable(GL_BLEND);
+						glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+					myParts[i].update(audio->getAvgBin(i%10)*3*intro);
+					myParts[i].draw(audio->getAvgBin(i%10)*3*intro);
+				glDisable(GL_BLEND);
+			
+					ofPopStyle();
+				ofPopMatrix();
 
 				kinectHandSize = abs(ofDist(pointLeftHand.x, pointLeftHand.y, pointRightHand.x, pointRightHand.y));
 				if(kinectHandSize < 100 && pointRightHand.x != 0){
@@ -164,9 +173,9 @@ void Fireflies::draw(){
 
 		abrFbo.begin();
 			abr.begin();
-				//abr.setUniform1f("amount", audio->getAvgBin(5)*50);
-				//abr.setUniform1f("intensity", ofMap(audio->getAmp(),0,8,0.01,0.12));
-				//fbo.draw(0,0);
+				abr.setUniform1f("amount", audio->getAvgBin(5)*50);
+				abr.setUniform1f("intensity", ofMap(audio->getAmp(),0,8,0.01,0.12));
+				fbo.draw(0,0);
 			abr.end();
 		abrFbo.end();
 

@@ -30,7 +30,7 @@ void VisualiserManager::init(Audio440& audio,Kinect440& kinect) {
 		visualiserPtrs[i]->draw();
 		visualiserPtrs[i]->queueOutro();
 	}
-	visualiserPtrs[0]->queueIntro();
+	intro->queueIntro();
 	del = Delauney440();
 }
 
@@ -93,7 +93,7 @@ void VisualiserManager::draw() {
 		playerTimeout = 300;
 	}
 	ofPushStyle();
-	del.update(kin->getContourPoly(),aud->getAvgBin(7)*25);
+	//del.update(kin->getContourPoly(),aud->getAvgBin(7)*25);
 	ofPopStyle();
 
 }
