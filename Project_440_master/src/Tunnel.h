@@ -64,11 +64,15 @@ private:
 	bool isIntro;
 	bool isOutro;
 	int introCounter;
-	ofFbo tunnel;
+	ofFbo tunnelr;
+	ofFbo tunnell;
+	ofFbo anaglyphFbo;
 	ofCamera camera;
 	int prevamp;
 	float offset;
 	ofShader bulge;
+	ofShader anaglyph;
+
 	Scanlines scan;
 	ofImage flash;
 	vector <TunnelParticle> parts;

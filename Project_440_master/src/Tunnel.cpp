@@ -1,4 +1,5 @@
 #include "Tunnel.h"
+#include "fullscreenQuad.h"
 
 void Tunnel::init(Audio440& aud,Kinect440& kin,ColorTheme& the){
 
@@ -10,11 +11,14 @@ void Tunnel::init(Audio440& aud,Kinect440& kin,ColorTheme& the){
 	mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
 	scan = Scanlines();
 	direction = ofVec3f(0,0,200);
-	tunnel.allocate(ofGetWidth(),ofGetHeight());
+	tunnell.allocate(ofGetWidth(),ofGetHeight());
+	tunnelr.allocate(ofGetWidth(),ofGetHeight());
+	anaglyphFbo.allocate(ofGetWidth(),ofGetHeight());
 	offset = 0;
 	prevamp = 0;
 	basic.load("shaders/default");
 	bulge.load("shaders/bulge");
+	anaglyph.load("shaders/fullscreenQuad");
 	circle.loadImage("images/softy.png");
 	generate();
 	light.setup();
@@ -26,6 +30,10 @@ void Tunnel::init(Audio440& aud,Kinect440& kin,ColorTheme& the){
 
 	rangeX = 500;
 	rangeY = 500;
+
+	FullscreenQuad::setup(anaglyph.getAttributeLocation("a_vertex"), anaglyph.getAttributeLocation("a_texCoord"));
+ 
+	cout << anaglyph.getAttributeLocation("a_vertex") << ", " <<  anaglyph.getAttributeLocation("a_texCoord") << endl;
 
 	kinectHandSize = 100;
 } 
@@ -39,13 +47,90 @@ void Tunnel::queueIntro(){
 void Tunnel::draw(){
 
 	if(!isCleanup) {
-		ofEnableLighting();
+
+		
+		tunnelr.begin();
+		camera.begin();
+		camera.setPosition(5 + ofGetWidth()/2,ofGetHeight()/2,1000);
+		generate();
+		camera.end();
+		tunnelr.end();
+		
+		
+		
+		tunnell.begin();
+		camera.begin();
+		camera.setPosition(-5 + ofGetWidth()/2,ofGetHeight()/2,1000);
+		generate();
+		camera.end();
+		tunnell.end();
+		
+		
+		anaglyph.begin();
+		anaglyphFbo.begin();
+		
+		anaglyph.setUniformTexture("left",tunnell.getTextureReference(),0);
+		anaglyph.setUniformTexture("right",tunnelr.getTextureReference(),1);
+
+
+		/*
+		glEnable(GL_TEXTURE_RECTANGLE_ARB);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_RECTANGLE_ARB, tunnelr.getTextureReference().texData.textureID);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_RECTANGLE_ARB, tunnell.getTextureReference().texData.textureID);
+		
+		anaglyph.setUniform1i("left", 1);
+		anaglyph.setUniform1i("right",0);
+		*/
+
+		anaglyph.setUniform2i("u_display_resolution",ofGetWidth(),ofGetHeight());
+		
+		FullscreenQuad::draw();
+		anaglyphFbo.end();
+		anaglyph.end();
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_RECTANGLE_ARB,0);
+
+		bulge.begin();
+			bulge.setUniform1f("width", ofGetWidth()/2);
+			bulge.setUniform1f("height", ofGetHeight()/2);
+			bulge.setUniform1f("radius", (ofMap(audio->getAvgBin(0),0,10,1.0,-0.3))*((float)introCounter/200));
+
+			anaglyphFbo.draw(0,0);
+		bulge.end();
+		
+		offset += 30;
+
+		glShadeModel(GL_SMOOTH);
+
+		if(offset >= 2000){
+			offset = 0;
+		}
+
+		if(isIntro && introCounter < 200) {
+			introCounter+= 10;
+		}else if(isIntro){
+			isIntro = false;
+		}
+
+		if(isOutro && introCounter > 0) {
+			introCounter-= 10;
+		}else if(isOutro) {
+			isOutro = false;
+			isCleanup = true;
+		}
+		
+	}
+
+} 
+
+void Tunnel::generate() {
+	ofEnableLighting();
 		light.enable();
-		tunnel.begin();
-		//light.enable();
 		glEnable(GL_DEPTH_TEST);
 		glShadeModel(GL_FLAT);
-		//glEnable(GL_FOG);
 		ofPushMatrix();
 		ofTranslate(0,sin(age)*100);
 		ofRotateX(sin(age)*2);
@@ -165,42 +250,6 @@ void Tunnel::draw(){
 		
 		
 
-		tunnel.end();
-
-		bulge.begin();
-			bulge.setUniform1f("width", ofGetWidth()/2);
-			bulge.setUniform1f("height", ofGetHeight()/2);
-			bulge.setUniform1f("radius", (ofMap(audio->getAvgBin(0),0,10,1.0,-0.3))*((float)introCounter/200));
-			tunnel.draw(0,0);
-			
-		bulge.end();
-		
-		offset += 30;
-
-		glShadeModel(GL_SMOOTH);
-
-		if(offset >= 2000){
-			offset = 0;
-		}
-
-		if(isIntro && introCounter < 200) {
-			introCounter+= 10;
-		}else if(isIntro){
-			isIntro = false;
-		}
-
-		if(isOutro && introCounter > 0) {
-			introCounter-= 10;
-		}else if(isOutro) {
-			isOutro = false;
-			isCleanup = true;
-		}
-		
-	}
-
-} 
-
-void Tunnel::generate() {
 }
 	
 void Tunnel::update(){

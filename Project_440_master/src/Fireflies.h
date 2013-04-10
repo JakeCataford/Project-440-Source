@@ -68,7 +68,7 @@ public:
 
 	/********** DRAW **********/
 	void draw(float pSize){
-		float inflation = 10;
+		float inflation = 5;
 
 		float h1, h2, s1, s2, b1, b2 = 0.0;
 

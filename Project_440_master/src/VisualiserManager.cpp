@@ -32,6 +32,7 @@ void VisualiserManager::init(Audio440& audio,Kinect440& kinect) {
 	}
 	intro->queueIntro();
 	del = Delauney440();
+	playerTimeout = 100;
 }
 
 void VisualiserManager::reset() {
@@ -44,6 +45,7 @@ void VisualiserManager::cycle() {
 
 	if(isReset) {
 		isReset = false;
+		playerTimeout = 100;
 	}
 
 	theme.newTheme();
@@ -90,7 +92,7 @@ void VisualiserManager::draw() {
 			//play
 			
 		}
-		playerTimeout = 300;
+		playerTimeout = 100;
 	}
 	ofPushStyle();
 	//del.update(kin->getContourPoly(),aud->getAvgBin(7)*25);
@@ -99,6 +101,12 @@ void VisualiserManager::draw() {
 }
 
 void VisualiserManager::update() {
+
+	if(playerTimeout < 0){
+
+		isReset = true;
+
+	}
 
 	visualiserPtrs[current]->update();
 
