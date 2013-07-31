@@ -1,6 +1,6 @@
 Project 440
 ==================
-Lightweight source repo
+This fork is an adaptation of the visualisations for use on osx for live performances.
 
 
 
